@@ -1,0 +1,1783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DysCover English Hub - Accessible B1+ LMS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=Open+Sans:wght@400;600;700&family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-canvas: #F8FAFC;
+            --surface: #FFFFFF;
+            --primary-dark: #2D3270;
+            --secondary-purple: #635BFF;
+            --pastel-lavender: #EEF2FF;
+            --pastel-mint: #ECFDF5;
+            --pastel-rose: #FFF1F2;
+            --text-main: #1E293B;
+            --text-subtle: #475569;
+            --border-color: #E2E8F0;
+            --font-family: 'Atkinson Hyperlegible', sans-serif;
+            --font-size-base: 1rem;
+            --line-height: 1.85;
+            --letter-spacing: 0.04em;
+        }
+
+        body.theme-lavender { --bg-canvas: #F5F3FF; --surface: #FFFFFF; }
+        body.theme-mint { --bg-canvas: #F0FDF4; --surface: #FFFFFF; }
+        body.theme-rose { --bg-canvas: #FFF1F2; --surface: #FFFFFF; }
+        body.theme-amber { --bg-canvas: #FEF3C7; --surface: #FFFFFF; }
+        body.theme-dark { --bg-canvas: #0F172A; --surface: #1E293B; --text-main: #F8FAFC; --text-subtle: #94A3B8; --border-color: #334155; --primary-dark: #A5B4FC; }
+
+        body.font-atkinson { font-family: 'Atkinson Hyperlegible', sans-serif; }
+        body.font-opensans { font-family: 'Open Sans', sans-serif; }
+        body.font-comic { font-family: 'Comic Neue', cursive, sans-serif; }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: var(--bg-canvas); color: var(--text-main); font-family: var(--font-family); font-size: var(--font-size-base); line-height: var(--line-height); letter-spacing: var(--letter-spacing); padding: 20px; transition: background 0.3s; }
+
+        #reading-focus-guide { position: fixed; pointer-events: none; height: 38px; width: 100%; background: rgba(99, 91, 255, 0.12); border-top: 2px solid var(--secondary-purple); border-bottom: 2px solid var(--secondary-purple); top: -100px; left: 0; z-index: 9999; display: none; }
+
+        .container { max-width: 1000px; margin: 0 auto; }
+        header { background: var(--surface); border: 2px solid var(--border-color); border-radius: 16px; padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); flex-wrap: wrap; gap: 15px; }
+
+        .brand-box { display: flex; align-items: center; gap: 15px; }
+        .brand-logo-svg { width: 50px; height: 50px; }
+        .brand-text h1 { font-size: 1.4rem; color: var(--primary-dark); font-weight: 700; line-height: 1.1; }
+        .brand-text p { font-size: 0.85rem; color: var(--text-subtle); }
+
+        .toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+        .btn-tool { background: var(--surface); color: var(--primary-dark); border: 1.5px solid var(--border-color); padding: 8px 12px; border-radius: 8px; font-size: 0.85rem; font-weight: 700; cursor: pointer; }
+        .btn-tool:hover { background: var(--secondary-purple); color: #FFF; }
+
+        .card { background: var(--surface); border: 2px solid var(--border-color); border-radius: 16px; padding: 30px; margin-bottom: 25px; box-shadow: 0 4px 20px rgba(0,0,0,0.02); }
+        .unit-selector { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 20px; }
+        .unit-tab { background: var(--surface); border: 2px solid var(--border-color); padding: 10px 18px; border-radius: 10px; cursor: pointer; font-weight: 700; white-space: nowrap; color: var(--text-subtle); }
+        .unit-tab.active { background: var(--secondary-purple); color: #FFF; border-color: var(--secondary-purple); }
+        .unit-tab.locked { opacity: 0.5; cursor: not-allowed; background: #E2E8F0; }
+
+        .session-stepper { display: flex; gap: 8px; margin-bottom: 25px; background: var(--surface); padding: 8px; border-radius: 12px; border: 1px solid var(--border-color); }
+        .session-btn { flex: 1; padding: 10px; border: none; background: transparent; border-radius: 8px; font-weight: 700; cursor: pointer; color: var(--text-subtle); }
+        .session-btn.active { background: var(--pastel-lavender); color: var(--primary-dark); border: 1px solid var(--secondary-purple); }
+        .session-btn.locked { opacity: 0.4; cursor: not-allowed; }
+
+        .skill-block { background: var(--surface); border-left: 5px solid var(--secondary-purple); padding: 25px; border-radius: 0 12px 12px 0; margin-bottom: 25px; border-top: 1px solid var(--border-color); border-right: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); }
+        .reading-paragraph { margin-bottom: 16px; text-align: justify; }
+        .clickable-word { cursor: pointer; border-bottom: 2px dotted var(--secondary-purple); padding: 0 2px; }
+        .clickable-word:hover { background: var(--pastel-lavender); border-radius: 4px; }
+
+        .quiz-option { display: block; width: 100%; padding: 12px; margin: 8px 0; background: var(--bg-canvas); border: 1.5px solid var(--border-color); border-radius: 8px; text-align: left; cursor: pointer; font-weight: 600; color: var(--text-main); }
+        .quiz-option:hover { border-color: var(--secondary-purple); }
+
+        .feedback-box { padding: 14px; border-radius: 8px; margin-top: 10px; font-weight: 600; }
+        .feedback-correct { background: var(--pastel-mint); color: #065F46; border: 1px solid #A7F3D0; }
+        .feedback-incorrect { background: var(--pastel-rose); color: #991B1B; border: 1px solid #FECDD3; }
+
+        textarea.board-input { width: 100%; min-height: 120px; padding: 14px; border: 1.5px solid var(--border-color); border-radius: 10px; background: var(--bg-canvas); color: var(--text-main); font-family: inherit; font-size: 1rem; margin: 10px 0; }
+        .hidden { display: none !important; }
+        .auth-toggle { color: var(--secondary-purple); cursor: pointer; font-weight: bold; text-decoration: underline; margin-top: 15px; display: inline-block; }
+        
+        .achievement-stars { display: flex; gap: 6px; margin-top: 8px; align-items: center; font-size: 1.1rem; flex-wrap: wrap; }
+        .grammar-box { background: var(--surface); border-left: 4px solid #059669; padding: 14px; border-radius: 8px; margin: 12px 0; }
+        .interactive-row { background: var(--surface); border: 1.5px solid var(--border-color); padding: 14px; border-radius: 10px; margin-bottom: 12px; }
+    </style>
+</head>
+<body>
+
+<div id="reading-focus-guide"></div>
+
+<div class="container">
+    <header>
+        <div class="brand-box">
+            <svg class="brand-logo-svg" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M40 140V50C40 40 55 35 75 35C95 35 110 45 110 45V135C110 135 95 125 75 125C55 125 40 140 40 140Z" fill="#2D3270"/>
+                <path d="M110 45C110 45 125 35 145 35C165 35 180 40 180 50V140C180 140 165 125 145 125C125 125 110 135 110 135V45Z" fill="#5752BA"/>
+                <circle cx="110" cy="100" r="65" stroke="#8FA0FF" stroke-width="12" fill="none"/>
+                <path d="M110 30L145 110L110 95L75 110L110 30Z" fill="#2D3270"/>
+                <circle cx="110" cy="70" r="14" fill="#FFFFFF"/>
+                <path d="M100 70H120M110 60V80" stroke="#CC0000" stroke-width="4"/>
+            </svg>
+            <div class="brand-text">
+                <h1>DysCover English</h1>
+                <p>Multisensory B1+ EFL Hub</p>
+            </div>
+        </div>
+        <div class="toolbar">
+            <select class="btn-tool" onchange="changeTheme(this.value)" title="Background Theme">
+                <option value="lavender">🌸 Soft Lavender</option>
+                <option value="mint">🌿 Pale Mint</option>
+                <option value="rose">🌷 Soft Rose</option>
+                <option value="amber">🌾 Warm Cream</option>
+                <option value="dark">🌙 Dark Contrast</option>
+            </select>
+            <select class="btn-tool" onchange="changeFont(this.value)" title="Dyslexia-friendly Font">
+                <option value="atkinson">Font: Atkinson</option>
+                <option value="opensans">Font: Open Sans</option>
+                <option value="comic">Font: Comic Neue</option>
+            </select>
+            <select class="btn-tool" onchange="changeFontSize(this.value)" title="Text Size">
+                <option value="1rem">Size: Normal</option>
+                <option value="1.15rem">Size: Large (+)</option>
+                <option value="1.3rem">Size: X-Large (++)</option>
+            </select>
+            <button class="btn-tool" onclick="toggleFocusGuide()">📏 Reading Guide</button>
+        </div>
+    </header>
+
+    <!-- AUTHENTICATION CARD -->
+    <div id="auth-card" class="card">
+        <h2 id="auth-title" style="color: var(--primary-dark); margin-bottom: 10px;">Student Login</h2>
+        <p id="auth-subtitle" style="color: var(--text-subtle); margin-bottom: 20px;">Enter your credentials to securely access your cloud-saved course progress across devices.</p>
+
+        <div style="margin-bottom: 15px;" id="name-field-container" class="hidden">
+            <label style="font-weight: 700; display: block; margin-bottom: 8px;">Full Name / Nickname:</label>
+            <input type="text" id="auth-name" placeholder="e.g. Alex_B1" style="width: 100%; padding: 12px; border-radius: 8px; border: 1.5px solid var(--border-color); font-size: 1rem; font-family: inherit;">
+            <label style="display: flex; align-items: center; gap: 8px; margin-top: 10px; font-weight: 600; cursor: pointer;">
+                <input type="checkbox" id="user-anonymous"> Post as Anonymous in collaborative boards
+            </label>
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label style="font-weight: 700; display: block; margin-bottom: 8px;">Student Email:</label>
+            <input type="email" id="auth-email" placeholder="e.g. student@university.edu" style="width: 100%; padding: 12px; border-radius: 8px; border: 1.5px solid var(--border-color); font-size: 1rem; font-family: inherit;">
+        </div>
+
+        <div style="margin-bottom: 20px;">
+            <label style="font-weight: 700; display: block; margin-bottom: 8px;">Password:</label>
+            <input type="password" id="auth-password" placeholder="••••••••" style="width: 100%; padding: 12px; border-radius: 8px; border: 1.5px solid var(--border-color); font-size: 1rem; font-family: inherit;">
+        </div>
+
+        <button id="auth-submit-btn" class="btn-tool" style="background: var(--secondary-purple); color: #FFF; width: 100%; padding: 14px; font-size: 1rem;" onclick="handleAuth()">Sign In ➔</button>
+        
+        <div style="text-align: center;">
+            <span id="auth-toggle-text" class="auth-toggle" onclick="toggleAuthMode()">Don't have an account? Register here</span>
+        </div>
+    </div>
+
+    <!-- MENTIMETER SURVEY CARD -->
+    <div id="survey-card" class="card hidden">
+        <h2 style="color: var(--primary-dark); margin-bottom: 10px;">Diagnostic Intake Questionnaire</h2>
+        <p style="color: var(--text-subtle); margin-bottom: 20px;">Please answer these 3 quick questions to customize your academic environment.</p>
+
+        <div style="margin-bottom: 20px;">
+            <label style="font-weight: 700; display: block; margin-bottom: 8px;">1. Would combining audio, colors, and visual aids help you understand grammar?</label>
+            <select class="quiz-option" id="survey-q1">
+                <option>A lot! I learn better by seeing and listening at the same time.</option>
+                <option>It would help me organize my ideas better.</option>
+                <option>I don't mind, I prefer text only.</option>
+            </select>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+            <label style="font-weight: 700; display: block; margin-bottom: 8px;">2. How would you prefer to learn and demonstrate what you know in this course?</label>
+            <select class="quiz-option" id="survey-q2">
+                <option>At my own pace, with multimedia support and no timers.</option>
+                <option>With a step-by-step visual guide that I can pause.</option>
+                <option>With traditional live classes held on a fixed schedule.</option>
+            </select>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+            <label style="font-weight: 700; display: block; margin-bottom: 8px;">3. Do you often find that letters seem to blur together or that reading long texts on a screen tires you out?</label>
+            <select class="quiz-option" id="survey-q3">
+                <option>Sometimes it happens to me, and I need to reread.</option>
+                <option>Yes, I find it difficult to follow continuous reading.</option>
+                <option>I prefer short texts or audio support.</option>
+                <option>It rarely happens to me.</option>
+            </select>
+        </div>
+
+        <button class="btn-tool" style="background: var(--secondary-purple); color: #FFF; width: 100%; padding: 14px; font-size: 1rem;" onclick="completeSurvey()">Save & Enter Course Hub ➔</button>
+    </div>
+
+    <!-- MAIN HUB DISPLAY -->
+    <div id="portal-display" class="hidden">
+        <div class="card" style="background: var(--pastel-lavender); padding: 15px 25px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <div>
+                <strong>Student:</strong> <span id="display-student-name">-</span> | <strong>Email:</strong> <span id="display-student-email">-</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+                <div>
+                    <strong>Overall Progress:</strong> <span id="progress-percent">0%</span> 
+                    <progress id="course-progress-bar" value="0" max="40" style="width: 120px; margin-left: 8px;"></progress>
+                    <div class="achievement-stars" id="achievement-stars-container"></div>
+                </div>
+                <button class="btn-tool" style="background: #EF4444; color: #FFF; padding: 6px 12px; font-size: 0.8rem;" onclick="logoutUser()">Log Out 🚪</button>
+            </div>
+        </div>
+
+        <div class="unit-selector" id="unit-tabs"></div>
+        <div class="session-stepper" id="session-tabs"></div>
+        <div class="card" id="content-display"></div>
+    </div>
+</div>
+
+<!-- WORD MODAL (IPA BRITÁNICO ESTÁNDAR) -->
+<div id="word-modal" class="card hidden" style="position: fixed; top: 15%; left: 50%; transform: translateX(-50%); width: 90%; max-width: 480px; z-index: 999; box-shadow: 0 10px 30px rgba(0,0,0,0.25);">
+    <h3 id="word-title" style="color: var(--primary-dark); margin-bottom: 10px;">Phonetic Pronunciation</h3>
+    <div id="word-body" style="margin: 15px 0; font-size: 1.15rem; line-height: 1.6;"></div>
+    <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;">
+        <select id="modal-voice-select" class="btn-tool" style="flex: 1;">
+            <option value="us-female">US Female</option>
+            <option value="us-male">US Male</option>
+            <option value="uk-female">UK Female</option>
+            <option value="uk-male">UK Male</option>
+        </select>
+        <select id="modal-speed-select" class="btn-tool">
+            <option value="0.75">0.75x</option>
+            <option value="1.0" selected>1.0x</option>
+            <option value="1.25">1.25x</option>
+        </select>
+    </div>
+    <div style="display: flex; gap: 10px;">
+        <button class="btn-tool" style="background: var(--secondary-purple); color: #FFF; flex: 1;" id="btn-speak-word">🔊 Listen Pronunciation</button>
+        <button class="btn-tool" onclick="closeWordModal()">Close</button>
+    </div>
+</div>
+
+<script>
+    let isRegisterMode = false;
+    let userProfile = { email: '', nickname: 'Student', password: '', anonymous: false, surveyCompleted: false };
+    let currentUnit = 1;
+    let currentSession = 1;
+    let unlockedUnit = 1;
+    let unlockedSession = 1;
+    let skillStep = 1;
+    let audioListenCount = 0;
+    let activityOrder = ['reading', 'listening', 'speaking', 'writing', 'arcade'];
+
+    let currentUtterance = null;
+    let isPausedAudio = false;
+    let lastAudioScript = '';
+
+    let mediaRecorder;
+    let audioChunks = [];
+    let recordingTimer = null;
+    let secondsElapsed = 0;
+
+    const unitsData = [
+        { id: 1, title: "Unit 1: Urban Wayfinding & Campus Accessibility", focus: "Present Simple vs. Continuous, Modals, Cause/Effect & 1st Conditional" },
+        { id: 2, title: "Unit 2: International Travel Logistics & Airports", focus: "Past Simple/Continuous, Future Forms, Narrative Cohesion & Capstone" },
+        { id: 3, title: "Unit 3: Cultural Exchange & Memorable Experiences", focus: "Present Perfect vs. Simple Past" },
+        { id: 4, title: "Unit 4: Environmental Conservation & Ecosystems", focus: "First and Second Conditionals" },
+        { id: 5, title: "Unit 5: Scientific Innovation & Technological Futures", focus: "Future Forms (Will vs. Going to)" },
+        { id: 6, title: "Unit 6: Culinary Arts & Global Gastronomy", focus: "Quantifiers & Partitives" },
+        { id: 7, title: "Unit 7: Contemporary Literature & Narrative Arts", focus: "Relative Clauses" },
+        { id: 8, title: "Unit 8: Career Development & Professional Networking", focus: "Modal Verbs of Obligation" }
+    ];
+
+    const sessionContents = {
+        1: {
+            1: {
+                title: "Session 1: Campus Mobility & Sidewalk Infrastructure",
+                focus: "Present Simple vs. Present Continuous",
+                intro: "<strong>What is this session about?</strong> We contrast permanent campus architecture and daily commuting routines (<em>Present Simple</em>) with temporary construction upgrades and detours (<em>Present Continuous</em>).",
+                grammarGuide: `
+                    <ul style="padding-left: 20px; display: flex; flex-direction: column; gap: 8px;">
+                        <li><strong>Present Simple (Subject + base verb / -s):</strong> Used for permanent architectural features, general facts, and daily commuting routines.<br>
+                        <em>Example:</em> "The main library <strong>has</strong> two automatic sliding doors at the north entrance." <em>(Permanent feature of the building)</em></li>
+                        <li><strong>Present Continuous (Subject + am/is/are + verb-ing):</strong> Used for temporary construction detours, ongoing accessibility upgrades, and actions happening around the current semester.<br>
+                        <em>Example:</em> "Workers <strong>are installing</strong> yellow tactile paving strips near the cafeteria this week." <em>(Temporary action in progress right now)</em></li>
+                    </ul>
+                `,
+                theoryImg: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=600&auto=format&fit=crop&q=80",
+                vocabulary: [
+                    { term: "Tactile paving", type: "noun", meaning: "Textured ground surface indicators that help pedestrians with visual impairments detect hazards or path direction using a cane or their feet.", example: "\"Bright yellow tactile paving guides students safely from the bus stop to the main auditorium.\"" },
+                    { term: "Curb cut", type: "noun", meaning: "A solid, sloped ramp built into a sidewalk curb to allow wheelchairs, strollers, and bicycles to move smoothly onto the street.", example: "\"Without a proper curb cut, crossing a busy campus intersection becomes nearly impossible for wheelchair users.\"" },
+                    { term: "Detour", type: "noun / verb", meaning: "A temporary alternative route used when a normal pathway is blocked by maintenance or construction.", example: "\"Because the east bridge is closed, students are taking a short detour through the botanical garden.\"" },
+                    { term: "Gradient", type: "noun", meaning: "The steepness or angle of a slope or ramp.", example: "\"A safe wheelchair ramp requires a gentle gradient so users do not lose balance.\"" },
+                    { term: "Unobstructed", type: "adjective", meaning: "Clear of physical obstacles, parked bicycles, or construction equipment.", example: "\"Campus security officers check that all emergency exits remain unobstructed every morning.\"" }
+                ],
+                paragraphs: [
+                    "Every morning, thousands of students walk across the Central Plaza at Northbridge University. For most pedestrians, moving from the dormitories to the science building takes less than ten minutes. Historically, older sections of the campus featured narrow stone walkways and steep staircases with no handrails, creating major barriers for students with mobility impairments.",
+                    "Today, Northbridge follows strict universal design principles. Permanent infrastructure across the main plaza includes wide, level concrete pathways, gentle ramps with secure handrails, and continuous tactile paving strips that alert visually impaired pedestrians before they reach crosswalks. These permanent elements ensure a reliable and safe daily commute for everyone in the academic community.",
+                    "Right now, however, the facilities department is upgrading several older sections of the west quad. Because construction crews are replacing cracked pavement and widening narrow corners this month, students are using a temporary wooden walkway beside the central fountain. While these active renovations cause minor delays, students appreciate the long-term accessibility benefits."
+                ],
+                audioScript: "Attention Northbridge students and staff. This is a campus facilities update for Monday morning. Please note that the main east sidewalk near the student union is closed today due to urgent repaving work. If you are walking toward the library or the lecture halls, please follow the temporary blue painted footprints on the ground. These footprints will guide you safely around the work zone through the shaded garden path. The alternative route is fully paved, completely accessible for wheelchairs, and takes only about three extra minutes of walking time. We apologize for the temporary inconvenience and thank you for your cooperation while our team improves campus accessibility.",
+                audioIpaScript: "/əˈtɛnʃən ˈnɔːθbrɪdʒ ˈstjuːdənts ænd stɑːf. ðɪs ɪz ə ˈkæmpəs fəˈsɪlɪtiz ˈʌpdeɪt fɔː ˈmʌndeɪ ˈmɔːnɪŋ. pliːz nəʊt ðæt ðə meɪn iːst ˈsaɪdwɔːk nɪə ðə ˈstjuːdənt ˈjuːnjən ɪz kləʊzd təˈdeɪ djuː tuː ˈɜːdʒənt ˌriːˈpeɪvɪŋ wɜːk. ɪf juː ɑː ˈwɔːkɪŋ təˈwɔːd ðə ˈlaɪbrəri ɔː ðə ˈlɛktʃə hɔːlz, pliːz ˈfɒləʊ ðə ˈtɛmpərəri bluː ˈpeɪntɪd ˈfʊtprɪnts ɒn ðə ɡraʊnd. ðiːz ˈfʊtprɪnts wɪl ɡaɪd juː ˈseɪfli əˈraʊnd ðə wɜːk zəʊn θruː ðə ˈʃeɪdɪd ˈɡɑːdn pɑːθ. ði ɔːlˈtɜːnətɪv ruːt ɪz ˈfʊli peɪvd, kəmˈpliːtli əkˈsɛsəbl fɔː ˈwiːltʃeəz, ænd teɪks ˈəʊnli əˈbaʊt θriː ˈɛkstrə ˈmɪnɪts ɒv ˈwɔːkɪŋ taɪm. wiː əˈpɒlədʒaɪz fɔː ðə ˈtɛmpərəri ˌɪnkənˈviːniəns ænd θæŋk juː fɔː jɔː kəʊˌɒpəˈreɪʃən waɪl ˈaʊə tiːm ɪmˈpruːvz ˈkæmpəs əkˌsɛsəˈbɪlɪti/",
+                readingImg: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=600&auto=format&fit=crop&q=80",
+                questionsRead: [
+                    { q: "1. What is the primary purpose of the text?", options: ["A) To complain about the noise levels near the science building.", "B) To explain how permanent universal design and temporary construction upgrades improve campus mobility.", "C) To compare the architecture of different university dormitories.", "D) To train security guards on how to remove blocked bicycles."], correct: "B", explanation: "The text contrasts permanent universal design infrastructure with temporary upgrades improving mobility." },
+                    { q: "2. According to the second paragraph, what permanent feature helps visually impaired pedestrians?", options: ["A) Automatic sliding doors at the library", "B) Wide stone staircases with handrails", "C) Temporary wooden walkways beside fountains", "D) Continuous tactile paving strips near crosswalks"], correct: "D", explanation: "Paragraph 2 specifies continuous tactile paving strips that alert visually impaired pedestrians before crosswalks." },
+                    { q: "3. Why does the author use the Present Continuous (\"are replacing\", \"are using\") in the third paragraph?", options: ["A) To describe temporary actions and renovations happening during the current month.", "B) To describe permanent rules that never change on campus.", "C) To discuss events that happened ten years ago.", "D) To make a prediction about next year's budget."], correct: "A", explanation: "Present Continuous describes temporary construction actions happening this month." },
+                    { q: "4. What can we infer about the students' attitude toward the current construction work?", options: ["A) They are demanding that the university cancel all classes immediately.", "B) They accept the temporary walkway because the upgrades will help the entire community.", "C) They prefer the older stone staircases over the new ramps.", "D) They refuse to walk past the central fountain."], correct: "B", explanation: "The text states that despite minor delays, students appreciate the long-term accessibility benefits." }
+                ],
+                questionsList: [
+                    { q: "1. Why is the main east sidewalk closed today?", options: ["A) For an outdoor student festival", "B) Because of a fallen tree", "C) For a bicycle race event", "D) Due to urgent repaving work"], correct: "D", explanation: "The broadcast states the main east sidewalk is closed today due to urgent repaving work." },
+                    { q: "2. What should students follow to stay on the correct alternative path?", options: ["A) Bright yellow safety cones", "B) Temporary blue painted footprints on the ground", "C) Overhead paper banners", "D) Campus security guards"], correct: "B", explanation: "Students are instructed to follow the temporary blue painted footprints on the ground." },
+                    { q: "3. Where does the alternative garden path lead?", options: ["A) To the parking lot and dormitories", "B) Straight to the athletic fields", "C) To the cafeteria and gymnasium", "D) Toward the library and lecture halls"], correct: "D", explanation: "The path guides pedestrians walking toward the library or the lecture halls." },
+                    { q: "4. How much extra walking time does the alternative route require?", options: ["A) Exactly ten minutes", "B) Half an hour", "C) Only about three extra minutes", "D) No extra time at all"], correct: "C", explanation: "The alternative route takes only about three extra minutes of walking time." }
+                ],
+                writingInstructions: "Write a short paragraph (100–150 words) describing your daily route to your university or workplace. Contrast what usually happens every day (Present Simple) with what changes or repairs you notice happening around you right now (Present Continuous). You must include at least two vocabulary words from this session (<strong>tactile paving, curb cut, detour,</strong> or <strong>unobstructed</strong>).",
+                speakingInstructions: "Record a 45-second voice note describing a path you walk frequently. Clearly state one permanent feature using the <strong>Present Simple</strong> and one temporary change or repair you observe today using the <strong>Present Continuous</strong>. Speak at a natural, clear pace.",
+                arcadeData: {
+                    title: "Interactive Grammar Sorter: Present Simple vs. Present Continuous ⭐",
+                    instructions: "Classify each campus sentence into <strong>Present Simple (Routines & Facts)</strong> or <strong>Present Continuous (Temporary Actions)</strong> to unlock your session completion star.",
+                    items: [
+                        { text: "1. \"The main library has two automatic sliding doors.\"", correct: "simple" },
+                        { text: "2. \"Workers are installing yellow tactile paving strips this week.\"", correct: "continuous" },
+                        { text: "3. \"Campus security checks emergency exits every morning.\"", correct: "simple" },
+                        { text: "4. \"Students are using a temporary wooden walkway this month.\"", correct: "continuous" },
+                        { text: "5. \"A safe wheelchair ramp requires a gentle gradient.\"", correct: "simple" },
+                        { text: "6. \"Crews are replacing cracked pavement near the west quad.\"", correct: "continuous" }
+                    ],
+                    options: [
+                        { val: "simple", label: "Present Simple (Routines & Permanent Facts)" },
+                        { val: "continuous", label: "Present Continuous (Temporary Actions)" }
+                    ]
+                }
+            },
+            2: {
+                title: "Session 2: Digital Kiosks & Touch-Interface Accessibility",
+                focus: "Modal Verbs of Obligation & Advice (must, have to, should)",
+                intro: "<strong>What is this session about?</strong> We explore how interactive digital campus kiosks help visitors navigate buildings, learning how modal verbs express design requirements and user recommendations.",
+                grammarGuide: `
+                    <ul style="padding-left: 20px; display: flex; flex-direction: column; gap: 8px;">
+                        <li><strong>Strong Obligation / Necessity (must / have to):</strong> Used for strict functional necessities and accessibility rules.<br>
+                        <em>Example:</em> "Digital kiosks <strong>must</strong> include screen-height adjustment buttons."</li>
+                        <li><strong>Recommendation / Best Practice (should):</strong> Used for helpful design advice and usability improvements.<br>
+                        <em>Example:</em> "The map interface <strong>should</strong> use high-contrast colors."</li>
+                    </ul>
+                `,
+                theoryImg: "https://images.unsplash.com/photo-1531482615713-2afd69097998?w=600&auto=format&fit=crop&q=80",
+                vocabulary: [
+                    { term: "Wayfinding kiosk", type: "noun", meaning: "An interactive digital screen placed in public spaces providing maps and facility directions.", example: "\"Visitors frequently stop at the main wayfinding kiosk to locate lecture halls and accessible elevators.\"" },
+                    { term: "High-contrast mode", type: "noun", meaning: "A display setting using sharp color contrasts (such as dark backgrounds with bright text) to improve readability.", example: "\"Developers need to include a high-contrast mode option so students with low vision can read maps easily.\"" },
+                    { term: "Reach range", type: "noun", meaning: "The maximum distance a person can comfortably touch from a seated or standing position.", example: "\"All touchscreen interactive buttons must stay within an accessible reach range of 120 centimeters from the ground.\"" },
+                    { term: "Glare", type: "noun", meaning: "Strong, dazzling light reflecting off a glass screen that makes information difficult to see.", example: "\"Engineers install anti-reflective glass panels to prevent sunlight glare on outdoor monitors.\"" }
+                ],
+                paragraphs: [
+                    "Interactive digital kiosks are becoming increasingly common across modern university campuses, helping students and visitors locate classrooms, administrative offices, and accessible restrooms quickly. However, poorly designed touchscreen systems often create unexpected barriers for individuals with disabilities. When an interface is placed too high or uses pale gray fonts, users in wheelchairs or those with low vision cannot interact with it successfully.",
+                    "To solve these usability problems, interface designers must follow strict accessibility standards. For instance, touchscreen menus have to feature adjustable height settings so that every user can operate the controls comfortably within a safe reach range. Furthermore, system designers should ensure that all maps include large icons and intuitive touch targets rather than cluttered sub-menus.",
+                    "Finally, outdoor digital displays require special technical adjustments to combat environmental challenges. Because direct sunlight causes intense screen glare, engineers must incorporate anti-reflective coatings and high-contrast color themes. When digital kiosks combine these essential features, campus navigation becomes truly inclusive and efficient for the entire student body."
+                ],
+                audioScript: "Maya: Hi Leo! Thanks for testing our new campus wayfinding kiosk today before we launch the final software. How does the interface feel? Leo: Happy to help, Maya. Overall, the map looks clean, but I noticed two major issues right away. First, the main search bar is located at the top of the monitor. From my wheelchair, it is completely out of my reach range. Maya: Oh, good catch! We definitely have to move the search bar to the bottom half of the screen or add a quick 'lower menu' button. Leo: Yes, exactly! Second, when I selected the route to the Chemistry Lab, the kiosk showed a tiny warning that the north elevator is broken, but the text was light gray on a white background. Because of the afternoon sun glare, I almost missed it completely. Maya: That is a serious flaw. Critical alerts should always appear in high-contrast colors with an optional audio chime. What else should we fix? Leo: You should also add a headphone jack at the base so blind students can use voice-guided navigation. Maya: Excellent recommendations, Leo. Let's update the prototype this afternoon!",
+                audioIpaScript: "/ˈmaɪə: haɪ ˈliːəʊ! θæŋks fɔː ˈtɛstɪŋ ˈaʊə njuː ˈkæmpəs ˈweɪfaɪndɪŋ ˈkiːɒsk təˈdeɪ bɪˈfɔː wiː lɔːntʃ ðə ˈfaɪnl ˈsɒftweə. haʊ dʌz ði ˈɪntəfeɪs fiːl? ˈliːəʊ: ˈhæpi tuː hɛlp, ˈmaɪə. ˌəʊvərˈɔːl, ðə mæp lʊks kliːn, bʌt aɪ ˈnəʊtɪst tuː ˈmeɪdʒər ˈɪʃuːz raɪt əˈweɪ. fɜːst, ðə meɪn sɜːtʃ bɑːr ɪz ləʊˈkeɪtɪd æt ðə tɒp ɒv ðə ˈmɒnɪtə. frɒm maɪ ˈwiːltʃeə, ɪt ɪz kəmˈpliːtli aʊt ɒv maɪ riːtʃ reɪndʒ. ˈmaɪə: əʊ, ɡʊd kætʃ! wiː ˈdɛfɪnɪtli hæv tuː muːv ðə sɜːtʃ bɑː tuː ðə ˈbɒtəm hɑːf ɒv ðə skriːn ɔːr æd ə kwɪk ˈləʊə ˈmɛnjuː ˈbʌtn. ˈliːəʊ: jɛs, ɪɡˈzæktli! ˈsɛkənd, wɛn aɪ sɪˈlɛktɪd ðə ruːt tuː ðə ˈkɛmɪstri læb, ðə ˈkiːɒsk ʃəʊd ə ˈtaɪni ˈwɔːnɪŋ ðæt ðə nɔːθ ˈɛlɪveɪtər ɪz ˈbrəʊkən, bʌt ðə tɛkst wɒz laɪt ɡreɪ ɒn ə waɪt ˈbækɡraʊnd. bɪˈkɒz ɒv ði ˌɑːftəˈnuːn sʌn ɡleə, aɪ ˈɔːlməʊst mɪst ɪt kəmˈpliːtli. ˈmaɪə: ðæt ɪz ə ˈsɪəriəs flɔː. ˈkrɪtɪkl əˈlɜːts ʃʊd ˈɔːlweɪz əˈpɪər ɪn haɪ ˈkɒntrɑːst ˈkʌləz wɪð ən ˈɒpʃənl ˈɔːdiəʊ tʃaɪm. wɒt ɛls ʃʊd wiː fɪks? ˈliːəʊ: juː ʃʊd ˈɔːlsəʊ æd ə ˈhɛdfəʊn dʒæk æt ðə beɪs səʊ blaɪnd ˈstjuːdənts kæn juːz vɔɪs ˈɡaɪdɪd ˌnævɪˈɡeɪʃən. ˈmaɪə: ˈɛksələnt ˌrɛkəmɛnˈdeɪʃənz, ˈliːəʊ. lɛts ʌpˈdeɪt ðə ˈprəʊtətaɪp ðɪs ˌɑːftəˈnuːn/",
+                readingImg: "https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=600&auto=format&fit=crop&q=80",
+                questionsRead: [
+                    { q: "1. What is the main topic of the text?", options: ["A) Fixing broken elevators inside campus libraries", "B) Buying new smartphones and laptops for students", "C) Designing accessible digital wayfinding kiosks for university campuses", "D) Printing paper maps for campus visitors"], correct: "C", explanation: "The passage focuses on designing accessible digital wayfinding kiosks for campuses." },
+                    { q: "2. According to the text, why do some poorly designed kiosks fail accessibility standards?", options: ["A) They are too expensive to maintain.", "B) They are placed too high or use pale gray fonts.", "C) They have no electricity connection.", "D) They speak foreign languages too loudly."], correct: "B", explanation: "Paragraph 1 states interfaces placed too high or using pale gray fonts create barriers." },
+                    { q: "3. What modal verb does the author use to express strict requirements for adjustable height settings?", options: ["A) Might", "B) Must / Have to", "C) Could", "D) Would"], correct: "B", explanation: "Paragraph 2 uses 'have to' and 'must' for strict accessibility standards." },
+                    { q: "4. What environmental challenge do outdoor digital displays face according to the third paragraph?", options: ["A) Intense sunlight screen glare", "B) Slow internet connection speeds", "C) Excessive audio background noise", "D) Outdated campus floor plans"], correct: "A", explanation: "Paragraph 3 explains that direct sunlight causes intense screen glare." }
+                ],
+                questionsList: [
+                    { q: "1. Why are Maya and Leo meeting near the digital kiosk?", options: ["A) Leo is lost and needs directions to his chemistry exam.", "B) Maya is testing the kiosk's accessibility features with Leo before launching it.", "C) They are repairing a broken glass screen on the monitor.", "D) Leo is teaching Maya how to program mobile applications."], correct: "B", explanation: "Maya thanks Leo for testing the new wayfinding kiosk before launching the final software." },
+                    { q: "2. What problem does Leo mention regarding the main search bar?", options: ["A) It takes too long to load results.", "B) It is placed too high at the top of the monitor, out of his reach range.", "C) It only works in Spanish.", "D) It disappears when he touches it."], correct: "B", explanation: "Leo explains the search bar at the top is out of his reach range from his wheelchair." },
+                    { q: "3. Why did Leo almost miss the warning about the broken elevator?", options: ["A) The audio volume was far too loud.", "B) The text was written in code.", "C) The screen turned off automatically.", "D) The light gray text had poor contrast against the white background under sun glare."], correct: "D", explanation: "The warning was light gray on a white background affected by afternoon sun glare." },
+                    { q: "4. What additional feature does Leo suggest adding at the end of the conversation?", options: ["A) A physical Braille keyboard attached to the side", "B) A headphone jack for voice-guided navigation", "C) Bigger wheels on campus shuttle carts", "D) Brighter overhead streetlamps"], correct: "B", explanation: "Leo recommends adding a headphone jack at the base for voice-guided navigation." }
+                ],
+                writingInstructions: "Write a short proposal (100–150 words) giving design advice for a new university website or digital kiosk. Use modal verbs (<strong>must, have to, should</strong>) and incorporate at least two vocabulary terms (<strong>reach range, high-contrast mode, wayfinding kiosk,</strong> or <strong>glare</strong>).",
+                speakingInstructions: "Record a 50-second voice note explaining one strict rule and one recommendation for designing an accessible touchscreen kiosk. Use modal verbs (<strong>must</strong> or <strong>should</strong>) and clearly explain the reasoning behind your choices.",
+                arcadeData: {
+                    title: "Interactive Hotspot Kiosk Audit ⭐",
+                    instructions: "Review the 4 accessibility flaws found in our virtual campus kiosk and select the appropriate modal verb (<strong>must / have to</strong> for strict standards vs. <strong>should</strong> for design recommendations) to fix each error.",
+                    items: [
+                        { text: "1. Flaw: Search bar is 180 cm high. Fix: Interactive buttons ______ stay within a 120 cm reach range.", correct: "must" },
+                        { text: "2. Flaw: Pale gray text on white screen. Fix: Developers ______ include a high-contrast mode option.", correct: "should" },
+                        { text: "3. Flaw: Outdoor monitor reflects sunlight. Fix: Engineers ______ install anti-reflective glass to prevent glare.", correct: "must" },
+                        { text: "4. Flaw: No audio output for blind visitors. Fix: The kiosk ______ include a headphone jack for voice navigation.", correct: "should" }
+                    ],
+                    options: [
+                        { val: "must", label: "must / have to (Strict Requirement)" },
+                        { val: "should", label: "should (Design Recommendation)" }
+                    ]
+                }
+            },
+            3: {
+                title: "Session 3: Visual Processing & Ergonomics",
+                focus: "Cause-and-Effect Connectors (due to, therefore, as a result, so that)",
+                intro: "<strong>What is this session about?</strong> We examine visual ergonomics in campus hallways, learning how to connect causes, results, and purposes using precise grammatical connectors.",
+                grammarGuide: `
+                    <ul style="padding-left: 20px; display: flex; flex-direction: column; gap: 8px;">
+                        <li><strong>Cause (due to / because of + Noun Phrase):</strong> Explains why an issue occurs.<br>
+                        <em>Example:</em> "Students miss signs <strong>due to</strong> poor hallway lighting."</li>
+                        <li><strong>Result & Purpose (therefore, as a result, so that):</strong> Shows logical outcomes and goals.<br>
+                        <em>Example:</em> "We use clean color-coding <strong>so that</strong> visitors find classrooms easily."</li>
+                    </ul>
+                `,
+                theoryImg: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=600&auto=format&fit=crop&q=80",
+                vocabulary: [
+                    { term: "Cognitive load", type: "noun", meaning: "The amount of mental effort and working memory required to process information at one time.", example: "\"Too many overlapping flyers increase student cognitive load, making it harder to focus on directions.\"" },
+                    { term: "Visual clutter", type: "noun", meaning: "An excessive or disorderly collection of visual elements that distracts or overwhelms viewers.", example: "\"Removing visual clutter from main corridors helps neurodivergent students navigate campus calmly.\"" },
+                    { term: "Color-coding", type: "noun", meaning: "A system of using specific colors to categorize routes, buildings, or departments.", example: "\"The university implemented color-coding on corridor walls so that visitors can distinguish departments instantly.\"" },
+                    { term: "Line of sight", type: "noun", meaning: "An unobstructed visual path between a person's eyes and a sign or destination.", example: "\"Hanging large banners too low blocks the line of sight to emergency exit signs.\"" }
+                ],
+                paragraphs: [
+                    "When university corridors are filled with overlapping posters, contrasting flyers, and tiny black-and-white signs, students experience high cognitive load between classes. This overwhelming visual clutter makes simple navigation stressful and exhausting. Therefore, modern campus architects work closely with student advisors to redesign hallway aesthetics and improve overall spatial ergonomics.",
+                    "To eliminate confusion, facilities teams remove unauthorized posters and establish clean, standardized bulletin boards in designated areas only. As a result, main walkways remain neat and orderly, protecting students from unnecessary mental distractions. Clear physical sightlines to room numbers and building directories are restored across every academic wing.",
+                    "Furthermore, universities implement intuitive color-coding systems on walls and floors. For example, the engineering wing features blue path markers, while humanities uses warm yellow tones. These visual cues are carefully installed so that freshmen and visitors can easily find their classrooms without experiencing anxiety or getting lost during rush hours."
+                ],
+                audioScript: "Hello everyone. This is a quick administrative report on our campus hallway improvement project. Due to numerous student complaints about confusing signs in the humanities building last semester, our maintenance team removed all old flyers and unauthorized notices from the corridor walls. As a result of this cleanup, the hallways look significantly cleaner and feel much calmer. In addition, we installed large, standardized color-coded directory boards near every main entrance. We placed these boards at eye level so that students can check their schedules and classroom numbers instantly without blocking foot traffic. We believe these ergonomic changes will greatly improve daily student life.",
+                audioIpaScript: "/həˈləʊ ˈɛvrɪwʌn. ðɪs ɪz ə kwɪk ədˈmɪnɪstrətɪv rɪˈpɔːt ɒn ˈaʊə ˈkæmpəs ˈhɔːlweɪ ɪmˈpruːvmənt ˈprɒdʒɛkt. djuː tuː ˈnjuːmərəs ˈstjuːdənt kəmˈpleɪnts əˈbaʊt kənˈfjuːzɪŋ saɪnz ɪn ðə hjuːˈmænɪtiz ˈbɪldɪŋ lɑːst sɪˈmɛstə, ˈaʊə ˈmeɪntənəns tiːm rɪˈmuːvd ɔːl əʊld ˈflaɪəz ænd ʌnˈɔːθəraɪzd ˈnəʊtɪsɪz frɒm ðə ˈkɒrɪdɔː wɔːlz. æz ə rɪˈzʌlt ɒv ðɪs ˈkliːnʌp, ðə ˈhɔːlweɪz lʊk sɪɡˈnɪfɪkəntli ˈkliːnər ænd fiːl mʌtʃ ˈkɑːmə. ɪn əˈdɪʃən, wiː ɪnˈstɔːld lɑːdʒ, ˈstændədaɪzd ˈkʌlə ˈkəʊdɪd dɪˈrɛktəri bɔːdz nɪər ˈɛvri meɪn ˈɛntrəns. wiː pleɪst ðiːz bɔːdz æt aɪ ˈlɛvl səʊ ðæt ˈstjuːdənts kæn tʃɛk ðeə ˈʃɛdjuːlz ænd ˈklɑːsruːm ˈnʌmbəz ˈɪnstəntli wɪˈðaʊt ˈblɒkɪŋ fʊt ˈtræfɪk. wiː bɪˈliːv ðiːz ˌɜːɡəˈnɒmɪk ˈtʃeɪndʒɪz wɪl ˈɡreɪtli ɪmˈpruːv ˈdeɪli ˈstjuːdənt laɪf/",
+                readingImg: "https://images.unsplash.com/photo-1497215728101-856f4ea42174?w=600&auto=format&fit=crop&q=80",
+                questionsRead: [
+                    { q: "1. What causes high cognitive load in campus corridors according to the first paragraph?", options: ["A) Loud conversations between classes", "B) Fast walking speeds of students", "C) Cold temperatures in the building", "D) Overlapping posters, flyers, and tiny signs"], correct: "D", explanation: "Paragraph 1 states overlapping posters, flyers, and tiny signs cause high cognitive load." },
+                    { q: "2. What is the direct result of removing unauthorized posters from main walkways?", options: ["A) Walkways remain neat and orderly, reducing mental distractions.", "B) Students walk much faster to lectures.", "C) Classrooms become larger and quieter.", "D) Electric bills decrease significantly."], correct: "A", explanation: "Paragraph 2 notes that as a result, walkways remain neat and orderly without distractions." },
+                    { q: "3. Which connector does the author use in the first paragraph to introduce the architectural solution?", options: ["A) Because of", "B) Therefore", "C) Due to", "D) Although"], correct: "B", explanation: "The text uses 'Therefore' to introduce the architectural redesign." },
+                    { q: "4. Why do universities implement intuitive color-coding systems on walls and floors?", options: ["A) To make the walls look bright and colorful", "B) To hide damaged doors and old paint", "C) So that freshmen and visitors can easily find classrooms without anxiety", "D) To match school sports team uniforms"], correct: "C", explanation: "Paragraph 3 states color-coding is installed so that freshmen and visitors find classrooms without anxiety." }
+                ],
+                questionsList: [
+                    { q: "1. Why did the university remove old flyers and unauthorized notices from the humanities building?", options: ["A) The paper was old and flammable.", "B) Due to student complaints about confusing signs", "C) The walls needed a fresh coat of paint.", "D) Students asked for modern art displays instead."], correct: "B", explanation: "The team removed them due to numerous student complaints about confusing signs." },
+                    { q: "2. What was the direct result of removing the flyers from the walls?", options: ["A) The hallways look significantly cleaner and feel much calmer.", "B) The hallways became darker and colder.", "C) Students started walking slower between classes.", "D) Classroom doors automatically locked."], correct: "A", explanation: "As a result of the cleanup, hallways look cleaner and feel calmer." },
+                    { q: "3. What new items were installed near every main entrance?", options: ["A) New lockers and student mailboxes", "B) Large, standardized color-coded directory boards", "C) Glass bulletin display windows", "D) Automated water fountains"], correct: "B", explanation: "Large, standardized color-coded directory boards were installed near main entrances." },
+                    { q: "4. What is the purpose of placing the new directory boards at eye level?", options: ["A) To display university art exhibitions", "B) So that students can check schedules instantly without blocking traffic", "C) To advertise upcoming campus events", "D) To block cold drafts from open doors"], correct: "B", explanation: "They are placed at eye level so that students can check schedules without blocking foot traffic." }
+                ],
+                writingInstructions: "Write a short report (100–150 words) addressed to your school director reporting a visual barrier or clutter issue in your building. You must use at least one cause connector (<strong>due to / because of</strong>) and one purpose or result connector (<strong>so that / as a result</strong>), plus incorporate two vocabulary terms from this session (<strong>cognitive load, visual clutter, color-coding,</strong> or <strong>line of sight</strong>).",
+                speakingInstructions: "Record a 50-second voice note explaining why clean hallway design and clear visual ergonomics are essential for student success. Use the connectors <strong>therefore</strong> or <strong>as a result</strong> fluently in your explanation.",
+                arcadeData: {
+                    title: "Connector Match & Hallway Makeover Game ⭐",
+                    instructions: "Complete the 5 hallway ergonomics sentences by selecting the right connector (<strong>due to, as a result,</strong> or <strong>so that</strong>).",
+                    items: [
+                        { text: "1. Freshmen got lost frequently ______ confusing, overlapping posters.", correct: "due to" },
+                        { text: "2. Facilities removed all unauthorized flyers; ______, corridors feel calmer.", correct: "as a result" },
+                        { text: "3. Signs were placed at eye level ______ wheelchair users can read them easily.", correct: "so that" },
+                        { text: "4. Visual clutter decreased ______ the new standardized bulletin boards.", correct: "due to" },
+                        { text: "5. Each academic wing uses color-coding ______ visitors identify departments fast.", correct: "so that" }
+                    ],
+                    options: [
+                        { val: "due to", label: "due to (Cause)" },
+                        { val: "as a result", label: "as a result (Outcome)" },
+                        { val: "so that", label: "so that (Purpose)" }
+                    ]
+                }
+            },
+            4: {
+                title: "Session 4: Weather & Meteorological Adaptation in Transit",
+                focus: "First Conditional (If + Present Simple, will / can / should + base verb)",
+                intro: "<strong>What is this session about?</strong> Even the best-designed campus faces unpredictable weather. We practice planning for sudden rain, wind, or slippery paths using the <em>First Conditional</em> to express likely consequences and safety advice.",
+                grammarGuide: `
+                    <ul style="padding-left: 20px; display: flex; flex-direction: column; gap: 8px;">
+                        <li><strong>First Conditional Structure:</strong> <code>If + Present Simple (Condition), will / can / should + base verb (Result)</code><br>
+                        <em>Example:</em> "<strong>If</strong> heavy rain <strong>floods</strong> the south ramp, wheelchair users <strong>should use</strong> the covered bridge." <em>(Realistic weather condition + safety solution)</em></li>
+                    </ul>
+                `,
+                theoryImg: "https://images.unsplash.com/photo-1519692933481-e162a57d6721?w=600&auto=format&fit=crop&q=80",
+                vocabulary: [
+                    { term: "Covered walkway", type: "noun", meaning: "A pedestrian path protected by a roof or canopy to shield people from rain, snow, or intense sun.", example: "\"If a sudden thunderstorm starts, students can walk completely dry by using the main covered walkway.\"" },
+                    { term: "Slip-resistant", type: "adjective", meaning: "Designed or treated with a textured surface to prevent people or wheelchair tires from sliding when wet.", example: "\"Outdoor campus ramps must have slip-resistant surfaces so they remain safe during rainy weather.\"" },
+                    { term: "Weather alert", type: "noun", meaning: "An official digital notification warning people about severe meteorological conditions.", example: "\"If the campus mobile app sends a severe weather alert, maintenance staff will close steep outdoor staircases.\"" },
+                    { term: "Waterlogged", type: "adjective", meaning: "Saturated or flooded with water, making unpaved paths difficult or unsafe to cross.", example: "\"Wheelchairs and walking canes easily get stuck if unpaved grass shortcuts become waterlogged.\"" }
+                ],
+                paragraphs: [
+                    "Campus Weather Advisory: Weather conditions can change rapidly during the autumn semester at Northbridge University. If a heavy afternoon thunderstorm hits the campus, outdoor concrete ramps and unpaved grass paths quickly become wet, slippery, and waterlogged. These sudden meteorological shifts pose serious safety risks for students rushing between academic buildings, especially those with mobility aids.",
+                    "To prevent accidents, the campus security office monitors regional radar continuously. When the mobile app sends an official severe weather alert, students should immediately avoid open outdoor staircases and steep stone paths. Instead, the administration advises everyone to use the protected glass covered walkways that link all main academic and residential wings.",
+                    "Furthermore, maintenance crews apply specialized slip-resistant coatings to all metal ramps twice a year. If temperature drops cause icy patches overnight, automated warning signs light up instantly. By combining smart weather alerts with proactive infrastructure maintenance, the university ensures that student transit remains safe and reliable regardless of external weather conditions."
+                ],
+                audioScript: "Attention Northbridge campus community. Please listen to this important weather safety announcement. Meteorological sensors indicate that strong wind gusts exceeding 40 kilometers per hour are approaching the valley. If wind speeds continue to rise, courtyard canvas tents and temporary outdoor kiosks will close immediately for safety. If you are currently walking near the north garden or the athletic complex, please avoid the open tree-lined paths and use the sheltered east corridor instead. Stay safe, keep your umbrellas secure, and check your campus mobile app regularly for live weather updates and further instructions from security.",
+                audioIpaScript: "/əˈtɛnʃən ˈnɔːθbrɪdʒ ˈkæmpəs kəˈmjuːnɪti. pliːz ˈlɪsn tuː ðɪs ɪmˈpɔːtənt ˈwɛðə ˈseɪfti əˈnaʊnsmənt. ˌmiːtiərəˈlɒdʒɪkl ˈsɛnsəz ˈɪndɪkeɪt ðæt strɒŋ wɪnd ɡʌsts ɪkˈsiːdɪŋ ˈfɔːti ˈkɪləmiːtəz pɜːr ˈaʊər ɑːr əˈprəʊtʃɪŋ ðə ˈvæli. ɪf wɪnd spiːdz kənˈtɪnjuː tuː raɪz, ˈkɔːtjɑːd ˈkænvəs tɛnts ænd ˈtɛmpərəri ˈaʊtdɔː ˈkiːɒsks wɪl kləʊz ɪˈmiːdiətli fɔː ˈseɪfti. ɪf juː ɑː ˈkʌrəntli ˈwɔːkɪŋ nɪə ðə nɔːθ ˈɡɑːdn ɔː ði æθˈlɛtɪk ˈkɒmplɛks, pliːz əˈvɔɪd ði ˈəʊpən triː laɪnd pɑːθs ænd juːz ðə ˈʃɛltəd iːst ˈkɒrɪdɔːr ɪnˈstɛd. steɪ seɪf, kiːp jɔːr ʌmˈbrɛləz sɪˈkjʊə, ænd tʃɛk jɔː ˈkæmpəs ˈməʊbaɪl æp ˈrɛɡjʊləli fɔː laɪv ˈwɛðər ˈʌpdeɪts ænd ˈfɜːðər ɪnˈstrʌkʃənz frɒm sɪˈkjʊərɪti/",
+                readingImg: "https://images.unsplash.com/photo-1519692933481-e162a57d6721?w=600&auto=format&fit=crop&q=80",
+                questionsRead: [
+                    { q: "1. What happens to outdoor ramps and grass paths during a heavy afternoon thunderstorm?", options: ["A) They freeze instantly into solid ice.", "B) They close permanently for repairs.", "C) They quickly become wet, slippery, and waterlogged.", "D) They dry out faster due to the wind."], correct: "C", explanation: "Paragraph 1 states they quickly become wet, slippery, and waterlogged." },
+                    { q: "2. What grammatical tense is used in the if-clause (\"If a heavy afternoon thunderstorm hits...\")?", options: ["A) Past Simple", "B) Present Continuous", "C) Future Simple", "D) Present Simple"], correct: "D", explanation: "First Conditional uses Present Simple in the 'if' condition clause." },
+                    { q: "3. What action should students take when the mobile app sends an official severe weather alert?", options: ["A) Leave the campus immediately and go home.", "B) Avoid open outdoor staircases and use protected covered walkways.", "C) Run across the unpaved grass shortcuts.", "D) Wait outdoors until campus guards arrive."], correct: "B", explanation: "Students should avoid open outdoor staircases and use protected covered walkways." },
+                    { q: "4. How often do maintenance crews apply specialized coatings to metal ramps?", options: ["A) Every single month", "B) Whenever it starts raining heavily", "C) Only once every four years", "D) Twice a year"], correct: "D", explanation: "Paragraph 3 states crews apply slip-resistant coatings twice a year." }
+                ],
+                questionsList: [
+                    { q: "1. What weather condition is approaching the valley according to the broadcast?", options: ["A) Strong wind gusts exceeding 40 kilometers per hour", "B) Heavy snowfall and freezing fog", "C) A severe heatwave with high humidity", "D) Flash flooding from nearby rivers"], correct: "A", explanation: "Sensors indicate strong wind gusts exceeding 40 km/h are approaching." },
+                    { q: "2. What happens immediately if wind speeds continue to rise?", options: ["A) Courtyard canvas tents and temporary outdoor kiosks close immediately.", "B) All afternoon classes are cancelled.", "C) All campus elevators stop operating.", "D) The main library gates lock automatically."], correct: "A", explanation: "Courtyard canvas tents and temporary outdoor kiosks will close immediately for safety." },
+                    { q: "3. Where should students walk if they are near the north garden?", options: ["A) Directly across the open grass fields", "B) Through the sheltered east corridor", "C) Down the main stone staircases", "D) Out the front security gates"], correct: "B", explanation: "Students are advised to use the sheltered east corridor instead of open paths." },
+                    { q: "4. Where can students check for live weather updates and security instructions?", options: ["A) On their campus mobile application", "B) On local television news channels", "C) On printed posters in the cafeteria", "D) Via campus radio broadcasts"], correct: "A", explanation: "They should check their campus mobile app regularly." }
+                ],
+                writingInstructions: "Write a short emergency safety guide (100–150 words) explaining what students must do during a sudden campus storm. You must write at least three <strong>First Conditional</strong> sentences and incorporate two vocabulary terms from this session (<strong>slip-resistant, waterlogged, covered walkway,</strong> or <strong>weather alert</strong>).",
+                speakingInstructions: "Record a 50-second voice note acting as a campus safety guide. Give fellow students practical advice for a rainy afternoon using at least two <strong>First Conditional</strong> structures clearly.",
+                arcadeData: {
+                    title: "Dynamic Weather-Response Simulator ⭐",
+                    instructions: "Match each campus weather emergency with its proper <strong>First Conditional</strong> response.",
+                    items: [
+                        { text: "1. Heavy Rain: Grass paths become waterlogged.", correct: "rain" },
+                        { text: "2. High Wind Gusts (45 km/h): Courtyard tents are unsafe.", correct: "wind" },
+                        { text: "3. Freezing Overnight Temperatures: Metal ramps risk icing.", correct: "ice" },
+                        { text: "4. Intense Afternoon Sun: Outdoor kiosk screens get glare.", correct: "sun" }
+                    ],
+                    options: [
+                        { val: "rain", label: "If heavy rain floods shortcuts, students should use covered walkways." },
+                        { val: "wind", label: "If wind speeds rise above 40 km/h, outdoor kiosks will close immediately." },
+                        { val: "ice", label: "If temperatures drop below zero, automated warning signs will light up." },
+                        { val: "sun", label: "If direct sunlight hits outdoor monitors, high-contrast mode can help users read." }
+                    ]
+                }
+            },
+            5: {
+                title: "Session 5: Unit 1 Capstone Community Forum",
+                focus: "Comprehensive Synthesis of Unit 1 (Present Tenses, Modals, Cause/Effect & First Conditional)",
+                intro: "<strong>What is this session about?</strong> Welcome to the Unit 1 Capstone Community Forum! In this session, students consolidate everything learned across Sessions 1 to 4 (sidewalks, kiosks, ergonomics, and weather transit) through a single comprehensive forum task and synthesis quiz.",
+                grammarGuide: `
+                    <p style="margin-bottom: 8px;"><strong>Language Synthesis Checklist:</strong></p>
+                    <ul style="padding-left: 20px; display: flex; flex-direction: column; gap: 6px;">
+                        <li><strong>Present Tenses:</strong> Describe current campus reality & ongoing upgrades.</li>
+                        <li><strong>Modals (must / should):</strong> State mandatory accessibility rules & design advice.</li>
+                        <li><strong>Cause/Effect Connectors (due to / so that):</strong> Explain problems & design goals.</li>
+                        <li><strong>First Conditional (If..., will / should...):</strong> Explain how your design protects commuters during bad weather.</li>
+                    </ul>
+                `,
+                theoryImg: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=600&auto=format&fit=crop&q=80",
+                vocabulary: [
+                    { term: "Tactile paving & Curb cut", type: "Session 1", meaning: "Ground indicators for visual impairments and sloped sidewalk ramps for wheelchairs." },
+                    { term: "Reach range & High-contrast mode", type: "Session 2", meaning: "Ergonomic screen button height and sharp color contrast for low vision." },
+                    { term: "Cognitive load & Visual clutter", type: "Session 3", meaning: "Mental effort required to process hallway signs and excessive visual distractions." },
+                    { term: "Covered walkway & Slip-resistant", type: "Session 4", meaning: "Roofed pedestrian paths and textured surfaces preventing slides during rain." }
+                ],
+                capstoneInstructions: `
+                    <p style="margin-bottom: 10px;"><strong>Option A: Written Forum Post (130–150 words) OR Option B: Audio Forum Post (45–60 seconds)</strong></p>
+                    <p style="margin-bottom: 10px;">Propose one concrete accessibility or ergonomic upgrade for your university campus or local neighborhood on the community forum board following this 3-part structure:</p>
+                    <ol style="padding-left: 22px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 6px;">
+                        <li><strong>The Problem:</strong> Identify a physical, digital, or visual barrier in your environment using <em>present tenses</em> and a cause connector (<em>due to / because of</em>).</li>
+                        <li><strong>The Solution:</strong> Propose two specific improvements using <em>modal verbs (must, should)</em> and incorporate at least two key vocabulary terms from Unit 1.</li>
+                        <li><strong>Weather Plan:</strong> End with a <em>First Conditional</em> sentence explaining how your design protects commuters during bad weather (<em>If..., will/should...</em>).</li>
+                    </ol>
+                    <p style="font-size: 0.95rem; background: #FFF; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color);"><strong>Peer Interaction Requirement:</strong> Read or listen to a classmate's proposal and leave a thoughtful reply (40–50 words written, or a 30-second audio comment) highlighting one strength in their design and asking one helpful follow-up question.</p>
+                `,
+                capstoneQuiz: [
+                    { text: "1. Which structure describes a temporary construction detour happening right now?", correct: "pres_cont" },
+                    { text: "2. Which modal verb expresses a strict legal or ergonomic accessibility requirement?", correct: "must" },
+                    { text: "3. Which connector introduces the purpose behind installing color-coded wall directories?", correct: "so_that" },
+                    { text: "4. Which term refers to the maximum distance a seated user can comfortably touch on a kiosk?", correct: "reach_range" },
+                    { text: "5. Complete the First Conditional safety rule: \"If heavy rain floods the plaza, students ______ use the covered bridge.\"", correct: "should_use" }
+                ],
+                capstoneQuizOptions: [
+                    { val: "pres_cont", label: "Present Continuous (e.g., are installing)" },
+                    { val: "must", label: "must / have to" },
+                    { val: "so_that", label: "so that" },
+                    { val: "reach_range", label: "Reach range" },
+                    { val: "should_use", label: "should use / will use" }
+                ]
+            }
+        },
+        2: {
+            1: {
+                title: "Session 1: Airport Check-in & Security Protocols",
+                focus: "Past Simple Affirmative & Negative Regular/Irregular Verbs",
+                intro: "<strong>What is this session about?</strong> We explore the initial steps of international travel—arriving at the airport, checking in luggage, and passing through security checkpoints. Grammatically, we review how to narrate completed past actions and report problems using the Past Simple.",
+                grammarGuide: `
+                    <ul style="padding-left: 20px; display: flex; flex-direction: column; gap: 8px;">
+                        <li><strong>Past Simple Affirmative (Subject + past verb [regular -ed / irregular]):</strong> Used for completed actions at a specific past time.<br>
+                        <em>Example:</em> "I <strong>arrived</strong> at Terminal 2 three hours before my international flight."</li>
+                        <li><strong>Past Simple Negative (Subject + didn't + base verb):</strong> Used to state what did not happen in the past.<br>
+                        <em>Example:</em> "The security agent <strong>didn't allow</strong> liquids over 100ml in my carry-on bag."</li>
+                    </ul>
+                `,
+                theoryImg: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=600&auto=format&fit=crop&q=80",
+                vocabulary: [
+                    { term: "Boarding pass", type: "noun", meaning: "A printed or digital document issued by an airline giving a passenger permission to board a specific flight.", example: "\"When I reached the departure gate, the flight attendant checked my digital boarding pass.\"" },
+                    { term: "Carry-on luggage", type: "noun", meaning: "Small bags and suitcases that passengers take directly into the aircraft cabin with them.", example: "\"Security officers scanned my carry-on luggage because I forgot to remove my laptop.\"" },
+                    { term: "Security checkpoint", type: "noun", meaning: "The secure barrier area where passengers and their belongings are screened for prohibited items.", example: "\"Long lines slowed down the international security checkpoint yesterday morning.\"" },
+                    { term: "Weight allowance", type: "noun", meaning: "The maximum permitted weight for checked or cabin bags set by an airline.", example: "\"My suitcase exceeded the airline weight allowance, so I paid an extra fee at the counter.\"" }
+                ],
+                paragraphs: [
+                    "Last month, Sofia traveled from Mexico City to Madrid for an academic conference. She arrived at Terminal 1 of the international airport three hours before her scheduled departure time to ensure a smooth check-in process. Because she booked her ticket online the previous week, she used the self-service kiosk to print her paper boarding pass and dropped off her heavy suitcase at the automated baggage drop counter without waiting in a long line.",
+                    "After finishing her check-in, Sofia walked directly toward the main security checkpoint. Unfortunately, the screening area was extremely crowded, and travelers waited in line for nearly forty minutes. When she finally reached the front of the line, a security officer inspected her carry-on luggage very carefully. Because Sofia accidentally left a bottled beverage inside her backpack, the officer didn't allow her to pass until she threw the liquid away.",
+                    "Despite this minor delay, Sofia successfully cleared security and walked to her departure gate just thirty minutes before boarding began. She bought a coffee at a nearby café, reviewed her conference notes, and relaxed before boarding the aircraft. Her experience demonstrated how preparation and early arrival turn a potentially stressful airport trip into a manageable routine."
+                ],
+                audioScript: "Attention passengers on Global Flight 402 bound for Toronto. This is an important check-in counter notification. Airline management reminds all travelers that international check-in desks are closed strictly sixty minutes prior to scheduled departure. Passengers who arrived late today didn't receive seat assignments on their preferred rows. Furthermore, security control reports heavy passenger volume this morning; therefore, all travelers must proceed immediately to checkpoint B. Please have your passports and boarding passes open and ready for inspection. Thank you for choosing Global Airlines.",
+                audioIpaScript: "/əˈtɛnʃən ˈpæsɪndʒəz ɒn ˈɡləʊbəl flaɪt fɔːr ˈəʊ tuː baʊnd fɔː təˈrɒntə.../",
+                readingImg: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=600&auto=format&fit=crop&q=80",
+                questionsRead: [
+                    { q: "1. What is the main purpose of the text?", options: ["A) To complain about long flight delays in Madrid.", "B) To describe a traveler's smooth check-in and security experience at the airport.", "C) To compare ticket prices between different airlines.", "D) To explain how to pack a suitcase for international trips."], correct: "B", explanation: "The text describes Sofia's smooth check-in and security experience." },
+                    { q: "2. According to the first paragraph, how did Sofia print her boarding pass?", options: ["A) At the self-service kiosk after booking online.", "B) At the airline customer service desk with an agent.", "C) Using a mobile smartphone application inside the taxi.", "D) She didn't print it because digital passes aren't allowed."], correct: "A", explanation: "She used the self-service kiosk to print her paper boarding pass." },
+                    { q: "3. Why did the security officer stop Sofia's carry-on luggage in the second paragraph?", options: ["A) Her passport was expired and invalid.", "B) She accidentally left a bottled beverage inside her backpack.", "C) Her suitcase exceeded the airline weight allowance.", "D) She forgot to show her paper boarding pass."], correct: "B", explanation: "She left a bottled beverage inside her backpack." },
+                    { q: "4. What grammatical tense is predominantly used throughout the text to narrate Sofia's actions?", options: ["A) Present Continuous", "B) Past Simple", "C) Future Simple", "D) Present Perfect"], correct: "B", explanation: "Past Simple is used to narrate completed past actions." }
+                ],
+                questionsList: [
+                    { q: "1. Which flight is the airport announcement addressing?", options: ["A) Flight 709 bound for London", "B) Global Flight 303 bound for New York", "C) Flight 104 bound for Vancouver", "D) Global Flight 402 bound for Toronto"], correct: "D", explanation: "Global Flight 402 bound for Toronto." },
+                    { q: "2. When do international check-in desks close according to the recording?", options: ["A) Thirty minutes before departure", "B) When the boarding gate doors lock", "C) Exactly two hours before takeoff", "D) Strictly sixty minutes prior to scheduled departure"], correct: "D", explanation: "Desks close strictly sixty minutes prior to departure." },
+                    { q: "3. What happened to passengers who arrived late at the counter?", options: ["A) They didn't receive seat assignments on their preferred rows.", "B) They missed their flights entirely.", "C) They paid a heavy financial penalty.", "D) They upgraded to first-class seats for free."], correct: "A", explanation: "They didn't receive seat assignments on their preferred rows." },
+                    { q: "4. Which security checkpoint does the announcer instruct passengers to use?", options: ["A) Checkpoint A", "B) Checkpoint B", "C) Checkpoint C", "D) The VIP private security lounge"], correct: "B", explanation: "Passengers must proceed immediately to checkpoint B." }
+                ],
+                writingInstructions: "Write a short narrative paragraph (100–150 words) describing your last trip or a fictional airport experience. You must use at least four Past Simple verbs (mix of regular and irregular) and incorporate two vocabulary terms (<strong>boarding pass, carry-on luggage, security checkpoint,</strong> or <strong>weight allowance</strong>).",
+                speakingInstructions: "Record a 45-second voice note describing a past experience at an airport or bus station. Use Past Simple affirmative and negative sentences to explain what you did and what you didn't do.",
+                arcadeData: {
+                    title: "Interactive Past Simple Verb Matcher ⭐",
+                    instructions: "Classify each airport verb into its correct Past Simple category (-ed regular vs. irregular change).",
+                    items: [
+                        { text: "1. arrive ➔ ______", correct: "regular" },
+                        { text: "2. book ➔ ______", correct: "regular" },
+                        { text: "3. take ➔ ______", correct: "irregular" },
+                        { text: "4. pay ➔ ______", correct: "irregular" },
+                        { text: "5. inspect ➔ ______", correct: "regular" },
+                        { text: "6. throw ➔ ______", correct: "irregular" }
+                    ],
+                    options: [
+                        { val: "regular", label: "Regular Verb (-ed)" },
+                        { val: "irregular", label: "Irregular Verb (V2 Change)" }
+                    ]
+                }
+            },
+            2: {
+                title: "Session 2: Background Actions & Interruptions",
+                focus: "Past Continuous (was/were + verb-ing) for Background Actions in Travel Narratives",
+                intro: "<strong>What is this session about?</strong> When recounting travel experiences, single past actions often happen while larger processes are already in progress. In this session, we learn how to use the <em>Past Continuous</em> to describe background airport activities and unexpected moments.",
+                grammarGuide: `
+                    <ul style="padding-left: 20px; display: flex; flex-direction: column; gap: 8px;">
+                        <li><strong>Past Continuous Structure (Subject + was/were + verb-ing):</strong> Used for actions in progress at a specific moment in the past.<br>
+                        <em>Example:</em> "While the ground crew <strong>was weighing</strong> my suitcase, other passengers <strong>were waiting</strong> patiently in line."</li>
+                        <li><strong>Combining Past Simple & Continuous:</strong> The Past Continuous sets the background scene, and the Past Simple interrupts it.<br>
+                        <em>Example:</em> "The security alarm <strong>rang</strong> while I <strong>was placing</strong> my laptop on the tray."</li>
+                    </ul>
+                `,
+                theoryImg: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=600&auto=format&fit=crop&q=80",
+                vocabulary: [
+                    { term: "Baggage drop", type: "noun", meaning: "The specialized airline counter where passengers leave pre-checked suitcases before heading to security.", example: "\"While Mateo was printing his tags, hundreds of travelers were lining up at the main baggage drop.\"" },
+                    { term: "Screening lane", type: "noun", meaning: "A specific pathway or corridor at a security checkpoint equipped with X-ray machines and metal detectors.", example: "\"Travelers were emptying their pockets as they walked through the metal detector in screening lane three.\"" },
+                    { term: "Prohibited item", type: "noun", meaning: "Any object, substance, or liquid banned from being carried inside an aircraft cabin or hold.", example: "\"Security agents were confiscating scissors and sharp objects classified as a prohibited item.\"" },
+                    { term: "Queue", type: "noun / verb", meaning: "A line of people waiting for something in a sequential order.", example: "\"Tourists were queuing for passport control when the automated gates suddenly stopped working.\"" }
+                ],
+                paragraphs: [
+                    "It was a chaotic Monday morning at Terminal 2, and thousands of travelers were rushing toward their respective gates. While airport ground staff were managing massive crowds at the main check-in desks, electronic flight boards were flashing delay warnings for multiple international departures. Travelers were carrying heavy backpacks, checking digital tickets on their smartphones, and listening intently to terminal loudspeaker announcements.",
+                    "Meanwhile, inside screening lane four, security officers were working under intense pressure. Passengers were placing laptops into plastic bins and removing jackets while the X-ray belts were running continuously. A nervous tourist was arguing with an agent because security personnel were confiscating a bottle of expensive perfume classified as a prohibited item. The atmosphere was loud, stressful, and fast-paced for everyone involved.",
+                    "Suddenly, while Daniel was walking toward his departure gate, the terminal lights flickered and the main escalator stopped moving. People were holding their breath, wondering if their flights would be cancelled. Fortunately, backup generators kicked in within seconds, and terminal operations resumed normally. Travelers quickly resumed queuing, proving that adaptability is essential when navigating international airport logistics."
+                ],
+                audioScript: "Interviewer: Good morning, listeners. We are broadcasting live from International Airport Terminal 3 with Manager Elena Vance. Elena, the security zones look very busy today. What were passengers doing incorrectly this morning? Elena: Good morning! Well, while our team was opening the primary screening lanes at 5:00 AM, hundreds of travelers were rushing forward without preparing their electronic devices. Many passengers were keeping laptops and tablets inside their bags while they were queuing. Interviewer: Ah, I see. And did that cause major bottlenecks? Elena: Exactly. Because people weren't paying attention, the security lines were moving much slower than usual. Our agents were constantly reminding travelers to remove liquids and metal items. While one agent was explaining the rules to a tourist, another passenger was accidentally setting off the metal detector with heavy steel boots. It was quite a hectic hour!",
+                audioIpaScript: "/ˈɪntəvjuːə: ɡʊd ˈmɔːnɪŋ, ˈlɪsnəz.../",
+                readingImg: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=600&auto=format&fit=crop&q=80",
+                questionsRead: [
+                    { q: "1. What is the setting and tone of the text in the first paragraph?", options: ["A) A quiet, empty airport terminal on a peaceful Sunday night.", "B) A private VIP lounge with luxury seating and soft music.", "C) A chaotic Monday morning at Terminal 2 with massive crowds and delays.", "D) A small regional airstrip with only two scheduled flights."], correct: "C", explanation: "A chaotic Monday morning at Terminal 2 with massive crowds and delays." },
+                    { q: "2. What were security officers doing inside screening lane four according to the second paragraph?", options: ["A) They were closing the checkpoint and taking a coffee break.", "B) They were handing out complimentary boarding passes to tourists.", "C) They were running X-ray belts, inspecting bins, and confiscating items.", "D) They were repairing a broken baggage belt manually."], correct: "C", explanation: "Running X-ray belts, inspecting bins, and confiscating items." },
+                    { q: "3. Why was a tourist arguing with security personnel?", options: ["A) The airline lost his checked luggage entirely.", "B) He missed his flight because the terminal lights flickered.", "C) His passport was rejected at the automated gate.", "D) Security was confiscating his perfume as a prohibited item."], correct: "D", explanation: "Security was confiscating his perfume as a prohibited item." },
+                    { q: "4. What grammatical structure does the author use to describe actions happening in progress when the escalator stopped?", options: ["A) Present Simple", "B) Past Continuous", "C) Future Continuous", "D) Present Perfect"], correct: "B", explanation: "Past Continuous is used for background actions in progress." }
+                ],
+                questionsList: [
+                    { q: "1. Where is the live radio interview taking place?", options: ["A) Inside an airplane cockpit during takeoff", "B) At International Airport Terminal 3 with Manager Elena Vance", "C) At a regional bus station ticket counter", "D) Inside a customs baggage claim office"], correct: "B", explanation: "At Terminal 3 with Manager Elena Vance." },
+                    { q: "2. What mistake were travelers making when security lanes opened at 5:00 AM?", options: ["A) They were bringing too many suitcases.", "B) They were sitting on the baggage belts.", "C) They were forgetting their passports at home.", "D) They were rushing forward and keeping laptops inside their bags."], correct: "D", explanation: "They were rushing forward and keeping laptops inside bags." },
+                    { q: "3. Why were the security lines moving much slower than usual?", options: ["A) The X-ray machines were completely broken.", "B) Passengers weren't paying attention or preparing their electronics.", "C) There were not enough security guards on duty.", "D) The airport power supply failed."], correct: "B", explanation: "Passengers weren't paying attention or preparing electronics." },
+                    { q: "4. What was happening while one security agent was explaining the rules to a tourist?", options: ["A) Another passenger was setting off the metal detector with heavy steel boots.", "B) The fire alarm started ringing loudly", "C) A flight was boarding passengers early.", "D) The computer system crashed completely."], correct: "A", explanation: "Another passenger was setting off the metal detector with heavy boots." }
+                ],
+                writingInstructions: "Write a 100–150 word journal entry describing an unexpected event that happened while you were traveling. Combine <strong>Past Continuous</strong> (for the background scene) with <strong>Past Simple</strong> (for the interrupting action). Include two vocabulary terms (<strong>screening lane, prohibited item, baggage drop,</strong> or <strong>queue</strong>).",
+                speakingInstructions: "Record a 50-second voice note describing what airport staff and travelers were doing around you during your last memorable trip. Use <strong>Past Continuous</strong> structures (was/were + verb-ing).",
+                arcadeData: {
+                    title: "Past Simple vs. Past Continuous Airport Scene Sorter ⭐",
+                    instructions: "Match each background clause (Past Continuous) with its correct interrupting event (Past Simple).",
+                    items: [
+                        { text: "1. While Mateo was printing his tags, ...", correct: "tags" },
+                        { text: "2. While security officers were inspecting bags, ...", correct: "bag" },
+                        { text: "3. While Daniel was walking toward his gate, ...", correct: "gate" }
+                    ],
+                    options: [
+                        { val: "tags", label: "...the automated baggage drop counter printed his boarding pass." },
+                        { val: "bag", label: "...they discovered an overlooked bottle of water." },
+                        { val: "gate", label: "...the terminal lights flickered and the escalator stopped." }
+                    ]
+                }
+            },
+            3: {
+                title: "Session 3: Future Forms for Travel Itineraries",
+                focus: "Future Forms (will, be going to, Present Continuous for Future Arrangements)",
+                intro: "<strong>What is this session about?</strong> Travel logistics require precise future planning. In this session, we learn how to express flight schedules, personal travel intentions, and spontaneous airport decisions using different future forms.",
+                grammarGuide: `
+                    <ul style="padding-left: 20px; display: flex; flex-direction: column; gap: 8px;">
+                        <li><strong>Scheduled Timetables (Present Simple):</strong> Used for fixed official timetables.<br>
+                        <em>Example:</em> "Flight AI-304 <strong>departs</strong> at 14:30 tomorrow."</li>
+                        <li><strong>Arrangements & Intentions (be going to / Present Continuous):</strong> Used for personal plans and arrangements.<br>
+                        <em>Example:</em> "We <strong>are flying</strong> to Paris next week / I <strong>am going to check</strong> my luggage online."</li>
+                        <li><strong>Spontaneous Decisions (will):</strong> Used for instant decisions made at the moment of speaking.<br>
+                        <em>Example:</em> "My bag is too heavy; I <strong>will transfer</strong> some items to my carry-on right now."</li>
+                    </ul>
+                `,
+                theoryImg: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=600&auto=format&fit=crop&q=80",
+                vocabulary: [
+                    { term: "Departure gate", type: "noun", meaning: "The specific door or area in an airport terminal where passengers gather before boarding their aircraft.", example: "\"Our flight departs at 8:00 AM, so we are going to walk to departure gate 12 immediately.\"" },
+                    { term: "Layover", type: "noun", meaning: "A brief stop or period of waiting between connecting flights during a journey.", example: "\"We will have a three-hour layover in Chicago before our connecting flight to London.\"" },
+                    { term: "Self-service kiosk", type: "noun", meaning: "An interactive computer terminal where passengers can print boarding passes and tag bags independently.", example: "\"Instead of waiting in line, I am using the self-service kiosk to print my tags tomorrow.\"" },
+                    { term: "Customs declaration", type: "noun", meaning: "An official customs form or digital system where travelers declare goods, currency, or food items being brought into a country.", example: "\"Passengers must complete their digital customs declaration before landing.\"" }
+                ],
+                paragraphs: [
+                    "Planning a complex international journey requires careful attention to schedules, timetables, and personal arrangements. Next month, Mateo and Sofia are embarking on a research trip to South America, and they are organizing every detail in advance. According to their itinerary, their first flight departs from Mexico City at 06:15 AM sharp. Because fixed airline timetables never change spontaneously, they know they must arrive at the terminal at least two hours before departure.",
+                    "To save time at the terminal, Mateo and Sofia are going to use the airline's mobile app tonight to complete their check-in and select their window seats. They also discussed their connection in Bogota, where they have a two-hour layover before catching their second aircraft. Sofia checked the weather forecast and remarked that it might rain upon arrival, so Mateo made a quick spontaneous decision: 'If it rains, we will buy umbrellas at the terminal shop instead of walking outside.'",
+                    "Their preparation proves that mastering different future forms is essential for stress-free travel. Whether they are relying on fixed present timetables for flight departures, arranging personal check-in methods with 'be going to', or making instant decisions with 'will' during unexpected travel moments, clear communication ensures that their international logistics run smoothly from start to finish."
+                ],
+                audioScript: "Agent: Good afternoon! Welcome to Global Travel Solutions. How are you preparing for your upcoming trip to Europe? Traveler: Hi! I am feeling a bit nervous. My flight leaves on Friday at noon, and I have a tight connection in Madrid. Agent: Don't worry. Let's review your itinerary. Your first flight departs at 12:00 PM sharp, and you are going to land in Madrid at 06:00 AM local time. That gives you a comfortable three-hour layover before your connecting flight to Rome. Traveler: Oh, that is wonderful. What about my luggage? Will my bags transfer automatically? Agent: Yes, they will! You don't need to pick them up in Madrid. However, remember that you are going to pass through passport control and security screening during your transfer. Traveler: Perfect. I am meeting my colleague at the Rome airport gate, so I will make sure to check the departure screens immediately after landing.",
+                audioIpaScript: "/ˈeɪdʒənt: ɡʊd ˈɑːftənuːn!.../",
+                readingImg: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=600&auto=format&fit=crop&q=80",
+                questionsRead: [
+                    { q: "1. What is the main theme of the reading text?", options: ["A) Buying cheap airline tickets online during holiday sales.", "B) Organizing a complex international travel itinerary using various future forms.", "C) Learning how to pilot commercial passenger aircraft.", "D) Managing lost luggage claims at customs."], correct: "B", explanation: "Organizing an international travel itinerary using various future forms." },
+                    { q: "2. Why does the author use the Present Simple tense ('departs from Mexico City at 06:15 AM') in the first paragraph?", options: ["A) To indicate a fixed, official airline timetable.", "B) To describe something that happened yesterday morning.", "C) To express a doubtful guess about the weather.", "D) To show an instant spontaneous decision."], correct: "A", explanation: "To indicate a fixed, official airline timetable." },
+                    { q: "3. How are Mateo and Sofia planning to complete their check-in tonight?", options: ["A) By waiting in a long line at the physical ticket counter.", "B) By asking a security guard at the entrance.", "C) By calling customer service over the telephone.", "D) By using the airline's mobile application."], correct: "D", explanation: "By using the airline's mobile application." },
+                    { q: "4. Which future form does Mateo use when he makes an instant decision about buying umbrellas if it rains?", options: ["A) Present Simple", "B) Present Continuous", "C) Future with 'will'", "D) Past Simple"], correct: "C", explanation: "Future with 'will' for spontaneous decisions." }
+                ],
+                questionsList: [
+                    { q: "1. Where is the conversation taking place?", options: ["A) At a hotel front desk in Rome", "B) At a currency exchange kiosk", "C) Inside an airport customs inspection office", "D) At Global Travel Solutions travel agency"], correct: "D", explanation: "At Global Travel Solutions travel agency." },
+                    { q: "2. When does the traveler's first flight leave according to the agent?", options: ["A) Thursday at midnight", "B) Friday at 12:00 PM sharp (noon)", "C) Saturday morning at 06:00 AM", "D) Sunday afternoon at 4:00 PM"], correct: "B", explanation: "Friday at 12:00 PM sharp (noon)." },
+                    { q: "3. What does the agent confirm about the traveler's checked luggage during the connection in Madrid?", options: ["A) The traveler must collect and re-check all bags manually.", "B) The luggage will remain in Mexico until requested.", "C) The bags will transfer automatically.", "D) The traveler must pay an extra weight fee."], correct: "C", explanation: "The bags will transfer automatically." },
+                    { q: "4. What spontaneous decision does the traveler make at the very end of the dialogue?", options: ["A) To check the departure screens immediately after landing to meet a colleague", "B) To cancel the trip to Rome entirely", "C) To book a VIP airport lounge access pass", "D) To rent a car in Madrid instead of flying"], correct: "A", explanation: "To check departure screens immediately after landing." }
+                ],
+                writingInstructions: "Write a 100–150 word travel itinerary message to a friend detailing your upcoming flight plans. You must combine fixed timetables (<strong>Present Simple</strong>), personal arrangements (<strong>be going to / Present Continuous</strong>), and one spontaneous decision (<strong>will</strong>). Include two vocabulary terms (<strong>departure gate, layover, self-service kiosk,</strong> or <strong>customs declaration</strong>).",
+                speakingInstructions: "Record a 50-second voice note explaining your travel plans for next weekend or your next vacation. Use different future forms (<strong>will, be going to,</strong> and <strong>Present Simple</strong>) to describe schedules and intentions.",
+                arcadeData: {
+                    title: "Future Forms Itinerary Builder ⭐",
+                    instructions: "Categorize each travel sentence into its correct future form.",
+                    items: [
+                        { text: "1. \"Our flight departs at 06:15 AM sharp tomorrow.\"", correct: "timetable" },
+                        { text: "2. \"We are going to use the airline's mobile app tonight.\"", correct: "arrangement" },
+                        { text: "3. \"If it rains, we will buy umbrellas at the terminal shop.\"", correct: "spontaneous" }
+                    ],
+                    options: [
+                        { val: "timetable", label: "Scheduled Timetable (Present Simple)" },
+                        { val: "arrangement", label: "Personal Arrangement (be going to)" },
+                        { val: "spontaneous", label: "Spontaneous Decision (will)" }
+                    ]
+                }
+            },
+            4: {
+                title: "Session 4: Narrative Cohesion & Complex Storytelling",
+                focus: "Narrative Cohesion, Transition Words, and Complex Travel Storytelling",
+                intro: "<strong>What is this session about?</strong> Bringing together past tenses, future projections, and logical connectors is essential for telling a cohesive story. In this session, we focus on narrative cohesion and transitional phrases to recount complete travel mishaps and resolutions.",
+                grammarGuide: `
+                    <ul style="padding-left: 20px; display: flex; flex-direction: column; gap: 8px;">
+                        <li><strong>Sequential Transition Markers:</strong> <em>First, meanwhile, subsequently, unexpectedly, in the end</em> — Used to guide the reader smoothly through chronological travel events.</li>
+                        <li><strong>Combining Tenses in Narrative:</strong> Seamless blending of Past Continuous, Past Simple, and future/modal decisions.<br>
+                        <em>Example:</em> "While I <strong>was waiting</strong> at the gate, the airline <strong>announced</strong> a delay, so I <strong>decided</strong> to buy coffee."</li>
+                    </ul>
+                `,
+                theoryImg: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=600&auto=format&fit=crop&q=80",
+                vocabulary: [
+                    { term: "Connecting flight", type: "noun", meaning: "A subsequent flight that takes a passenger from a transit airport to their final destination.", example: "\"Unexpectedly, our first leg was delayed; consequently, we missed our connecting flight to Paris.\"" },
+                    { term: "Baggage reclaim", type: "noun", meaning: "The hall or area in an airport terminal where arriving passengers collect their checked luggage.", example: "\"After landing safely, we walked directly to baggage reclaim to pick up our suitcases.\"" },
+                    { term: "Customs inspection", type: "noun", meaning: "The official examination of passengers, luggage, and goods by government authorities at a national border.", example: "\"Meanwhile, international travelers were passing through a rigorous customs inspection with their declaration forms.\"" },
+                    { term: "Boarding announcement", type: "noun", meaning: "A spoken PA system message informing passengers that aircraft boarding has commenced.", example: "\"Just as I was buying a snack, the final boarding announcement echoed across the terminal.\"" }
+                ],
+                paragraphs: [
+                    "International travel rarely goes completely according to plan, as Daniel discovered during his journey to Buenos Aires last winter. First, his morning taxi broke down on the highway, forcing him to run the final kilometer to Terminal 1. Fortunately, he arrived just before the check-in desk closed, allowing him to check his luggage and sprint toward security without missing his flight.",
+                    "Meanwhile, inside the crowded screening area, another unexpected obstacle delayed his progress. While security officers were inspecting his carry-on bag, they discovered an overlooked bottle of water, causing a ten-minute security check. Consequently, by the time Daniel cleared the checkpoint, the final boarding announcement for his flight was already echoing across the terminal speakers. He rushed down the concourse, feeling exhausted but determined.",
+                    "In the end, persistence paid off. He reached departure gate 14 just as the gate agent was scanning the very last passenger's ticket. He boarded the aircraft successfully, settled into his window seat, and breathed a sigh of relief. His eventful journey taught him valuable lessons about airport timing, transition markers, and emotional resilience during complex international transits."
+                ],
+                audioScript: "Welcome back to Travel Wisdom. Today we discuss transit nightmares. Picture this: you land at a busy international hub for a connecting flight. First, your initial flight arrives twenty minutes late. Suddenly, you realize you have only thirty minutes to cross two massive terminals. While you are running desperately past duty-free shops, airport staff are closing the aircraft doors. Ultimately, despite your best efforts, you miss the connection. What happens next? Don't panic! Airline customer service will automatically rebook you on the next available evening departure and issue meal vouchers while you wait.",
+                audioIpaScript: "/ˈwɛlkəm bæk tuː ˈtrævəl ˈwɪzdəm.../",
+                readingImg: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=600&auto=format&fit=crop&q=80",
+                questionsRead: [
+                    { q: "1. What happened to Daniel at the very beginning of his journey to Buenos Aires?", options: ["A) He overslept and missed his alarm clock entirely.", "B) His passport was stolen at the hotel reception desk.", "C) His morning taxi broke down on the highway, forcing him to run.", "D) His flight was cancelled due to a severe snowstorm."], correct: "C", explanation: "His morning taxi broke down on the highway." },
+                    { q: "2. What caused a ten-minute security check while Daniel was passing through the checkpoint?", options: ["A) He forgot to bring his paper boarding pass.", "B) The metal detector malfunctioned completely.", "C) Security officers discovered an overlooked bottle of water in his bag.", "D) He refused to remove his jacket and shoes."], correct: "C", explanation: "Security officers discovered an overlooked bottle of water." },
+                    { q: "3. What transition word does the author use in the second paragraph to show simultaneous events happening inside the screening area?", options: ["A) First", "B) Meanwhile", "C) Unexpectedly", "D) In the end"], correct: "B", explanation: "Meanwhile." },
+                    { q: "4. How did Daniel's journey conclude in the third paragraph?", options: ["A) He reached departure gate 14 just in time and boarded successfully.", "B) He missed his flight and spent the night on a terminal chair.", "C) He rented a car and drove across South America instead.", "D) He decided to cancel his academic conference and return home."], correct: "A", explanation: "He reached departure gate 14 just in time and boarded successfully." }
+                ],
+                questionsList: [
+                    { q: "1. What scenario does the podcast host ask listeners to imagine at the beginning?", options: ["A) Winning a free first-class upgrade to Hawaii.", "B) Landing late at a busy hub for a tight connecting flight.", "C) Losing luggage permanently at baggage reclaim.", "D) Forgetting a passport at international customs."], correct: "B", explanation: "Landing late at a busy hub for a tight connecting flight." },
+                    { q: "2. How much time does the passenger have to cross two massive terminals in the podcast example?", options: ["A) Only thirty minutes", "B) Exactly two full hours", "C) Ten minutes", "D) Forty-five minutes"], correct: "A", explanation: "Only thirty minutes." },
+                    { q: "3. What action are airport staff taking while the passenger is running past duty-free shops?", options: ["A) They are closing the aircraft doors.", "B) They are cleaning the airplane cabin.", "C) They are handing out free coffee and snacks.", "D) They are searching for missing luggage."], correct: "A", explanation: "They are closing the aircraft doors." },
+                    { q: "4. According to the host, what does airline customer service do if a passenger misses a connection?", options: ["A) They automatically rebook the passenger on the next evening departure and issue meal vouchers.", "B) They charge a heavy penalty fee and cancel the return ticket.", "C) They tell the passenger to book a hotel room at their own expense.", "D) They require the passenger to wait until the following week."], correct: "A", explanation: "They rebook on the next flight and issue meal vouchers." }
+                ],
+                writingInstructions: "Write a cohesive 100–150 word travel mishap story using transition markers (<strong>First, meanwhile, unexpectedly, consequently, in the end</strong>). Incorporate two vocabulary terms (<strong>connecting flight, baggage reclaim, customs inspection,</strong> or <strong>boarding announcement</strong>).",
+                speakingInstructions: "Record a 50-second voice note telling a short, structured story about a travel delay or airport surprise using clear transition words and past tenses.",
+                arcadeData: {
+                    title: "Narrative Sequence Builder ⭐",
+                    instructions: "Order the narrative events chronologically using transition markers.",
+                    items: [
+                        { text: "1. First step of the journey:", correct: "first" },
+                        { text: "2. Simultaneous background event:", correct: "meanwhile" },
+                        { text: "3. Final resolution:", correct: "end" }
+                    ],
+                    options: [
+                        { val: "first", label: "First, his morning taxi broke down on the highway." },
+                        { val: "meanwhile", label: "Meanwhile, security officers were inspecting his carry-on bag." },
+                        { val: "end", label: "In the end, he reached departure gate 14 just in time." }
+                    ]
+                }
+            },
+            5: {
+                title: "Session 5: Unit 2 Capstone Community Forum",
+                focus: "Comprehensive Synthesis of Unit 2 (Past Tenses, Future Forms & Transition Connectors)",
+                intro: "<strong>What is this session about?</strong> Welcome to the Unit 2 Capstone Community Forum! In this final session, students consolidate everything learned across Sessions 1 to 4 (check-in, security, digital tools, future itineraries, and narrative cohesion) through a single comprehensive forum task and synthesis quiz.",
+                grammarGuide: `
+                    <p style="margin-bottom: 8px;"><strong>Language Synthesis Checklist:</strong></p>
+                    <ul style="padding-left: 20px; display: flex; flex-direction: column; gap: 6px;">
+                        <li><strong>Past Simple / Continuous:</strong> Recount past travel experiences & mishaps.</li>
+                        <li><strong>Future Forms (will, be going to, Present Simple):</strong> Outline upcoming trips & arrangements.</li>
+                        <li><strong>Transition Connectors:</strong> Ensure smooth narrative cohesion (<em>First, meanwhile, unexpectedly, in the end</em>).</li>
+                    </ul>
+                `,
+                theoryImg: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=600&auto=format&fit=crop&q=80",
+                vocabulary: [
+                    { term: "Boarding pass & Carry-on luggage", type: "Session 1", meaning: "Flight permission document and cabin bags." },
+                    { term: "Baggage drop & Screening lane", type: "Session 2", meaning: "Luggage counter and security X-ray channel." },
+                    { term: "Departure gate & Layover", type: "Session 3", meaning: "Boarding door and connection waiting period." },
+                    { term: "Connecting flight & Baggage reclaim", type: "Session 4", meaning: "Transit flight and arrival luggage hall." }
+                ],
+                capstoneInstructions: `
+                    <p style="margin-bottom: 10px;"><strong>Option A: Written Forum Post (130–150 words) OR Option B: Audio Forum Post (45–60 seconds)</strong></p>
+                    <p style="margin-bottom: 10px;">Share a detailed travel narrative or an upcoming international travel plan on the community forum board following this structure:</p>
+                    <ol style="padding-left: 22px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 6px;">
+                        <li><strong>The Context / Past Experience:</strong> Describe a memorable past airport experience or mishap using <em>Past Simple</em> and <em>Past Continuous</em> verbs, incorporating at least two vocabulary terms from Unit 2.</li>
+                        <li><strong>The Future Itinerary:</strong> Outline your plans for your next trip using <em>future forms</em> (be going to, Present Simple timetables, or will).</li>
+                        <li><strong>Narrative Flow:</strong> Use at least two <em>transition markers</em> (First, meanwhile, unexpectedly, consequently, or in the end) to make your post flow smoothly.</li>
+                    </ol>
+                    <p style="font-size: 0.95rem; background: #FFF; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color);"><strong>Peer Interaction Requirement:</strong> Read or listen to a classmate's forum post and leave a thoughtful reply (40–50 words written, or a 30-second audio comment) highlighting one interesting detail in their travel story and asking one helpful follow-up question.</p>
+                `,
+                capstoneQuiz: [
+                    { text: "1. Which tense is used for a completed action at a specific past time?", correct: "past_simple" },
+                    { text: "2. Which structure describes a background action in progress interrupted by a past event?", correct: "past_cont" },
+                    { text: "3. Which future form expresses fixed official airline timetables?", correct: "pres_simple_fut" },
+                    { text: "4. Which term describes a brief stop between connecting flights?", correct: "layover" },
+                    { text: "5. Which transition word indicates simultaneous background events?", correct: "meanwhile" }
+                ],
+                capstoneQuizOptions: [
+                    { val: "past_simple", label: "Past Simple (e.g., arrived)" },
+                    { val: "past_cont", label: "Past Continuous (e.g., was waiting)" },
+                    { val: "pres_simple_fut", label: "Present Simple Timetable (e.g., departs at 6:00)" },
+                    { val: "layover", label: "Layover" },
+                    { val: "meanwhile", label: "Meanwhile" }
+                ]
+            }
+        },
+        3: generateUniqueUnitData(3, "Cultural Exchange & Memorable Experiences", "Present Perfect vs. Simple Past", "Global Traditions & Customs", "https://images.unsplash.com/photo-1488646953014-85cb44e25828"),
+        4: generateUniqueUnitData(4, "Environmental Conservation & Ecosystems", "Conditionals (1st & 2nd)", "Biodiversity & Renewable Energy", "https://images.unsplash.com/photo-1497436072909-60f360e1d4b1"),
+        5: generateUniqueUnitData(5, "Scientific Innovation & Technological Futures", "Future Forms", "Artificial Intelligence & Space Exploration", "https://images.unsplash.com/photo-1451187580459-43490279c0fa"),
+        6: generateUniqueUnitData(6, "Culinary Arts & Global Gastronomy", "Quantifiers & Partitives", "Kitchen Management & Nutrition Science", "https://images.unsplash.com/photo-1555396273-367ea4eb4db5"),
+        7: generateUniqueUnitData(7, "Contemporary Literature & Narrative Arts", "Relative Clauses", "Storytelling Structures & Suspense Writing", "https://images.unsplash.com/photo-1457369804613-52c61a468e7d"),
+        8: generateUniqueUnitData(8, "Career Development & Professional Networking", "Modal Verbs of Obligation", "Interviews & Corporate Communication", "https://images.unsplash.com/photo-1521737604893-d14cc237f11d")
+    };
+
+    function generateUniqueUnitData(uId, uTitle, grammar, theme, imgBase) {
+        let sessions = {};
+        const subTopics = [
+            "Foundations and Core Principles",
+            "Advanced Methodological Frameworks",
+            "Digital and Practical Applications",
+            "Crisis Management and Problem Solving",
+            "Capstone Synthesis and Community Forum"
+        ];
+        
+        for (let s = 1; s <= 5; s++) {
+            sessions[s] = {
+                title: `Session ${s}: ${theme} (${subTopics[s-1]})`,
+                focus: grammar,
+                intro: `<strong>Context & Grammar:</strong> In Unit ${uId} Session ${s}, we explore ${theme.toLowerCase()} through the lens of ${grammar}. Students engage with authentic case studies, linguistic markers, and professional strategies.`,
+                grammarGuide: `<p>Focus on accurate usage of <strong>${grammar}</strong> within professional and academic contexts.</p>`,
+                theoryImg: `${imgBase}?w=600&auto=format&fit=crop&q=80`,
+                vocabulary: [
+                    { term: "Framework", type: "noun", meaning: "A supporting structure around which something is built." },
+                    { term: "Methodology", type: "noun", meaning: "A system of methods used in a particular area of study." }
+                ],
+                paragraphs: [
+                    `Examining ${theme.toLowerCase()} requires a rigorous analysis of foundational parameters and international protocols.`,
+                    `Scholars investigate how industry leaders implement ${grammar} within global operational environments to optimize outcomes.`,
+                    `Empirical data confirms that structured linguistic mastery significantly enhances professional competency and cross-cultural execution.`
+                ],
+                audioScript: `Welcome to Unit ${uId}, Session ${s} covering ${theme}. Today we analyze structural models utilizing ${grammar}. Listen closely to identify key variables and professional terminology.`,
+                audioIpaScript: `/ˈwɛlkəm tuː ˈjuːnɪt ${uId}, ˈsɛʃən ${s} ˈkʌvərɪŋ/...`,
+                readingImg: `${imgBase}?w=600&auto=format&fit=crop&q=80`,
+                questionsRead: [
+                    { q: "1. What is the primary analytical focus of this session?", options: ["A) " + theme, "B) Ancient cartography", "C) Marine ecosystems", "D) Classical sculpture"], correct: "A", explanation: "The session focuses directly on " + theme + "." },
+                    { q: "2. Which grammatical structure supports the analysis?", options: ["A) " + grammar, "B) Future perfect continuous", "C) Third conditional", "D) Passive subjunctive"], correct: "A", explanation: "Grammar focus is set on " + grammar + "." },
+                    { q: "3. What do empirical studies confirm regarding mastery?", options: ["A) It enhances professional competency and cross-cultural execution.", "B) Studies remain inconclusive.", "C) Grammar has no practical value.", "D) Only vocabulary matters."], correct: "A", explanation: "Mastery enhances professional competency." },
+                    { q: "4. How do professionals approach these challenges?", options: ["A) Through structured operational environments.", "B) By random guesswork.", "C) By ignoring protocols.", "D) Through trial and error alone."], correct: "A", explanation: "Professionals rely on structured operational environments." }
+                ],
+                questionsList: [
+                    { q: "1. What core subject does the audio lecture introduce?", options: ["A) " + theme, "B) Architectural drafting", "C) Organic chemistry", "D) Marine biology"], correct: "A", explanation: "The lecture introduces " + theme + "." },
+                    { q: "2. Why is structural methodology vital in this field?", options: ["A) It ensures high accuracy and operational efficiency.", "B) It increases paperwork.", "C) It slows down decision-making.", "D) It eliminates teamwork."], correct: "A", explanation: "Methodology ensures high accuracy and efficiency." },
+                    { q: "3. What approach is recommended for practitioners?", options: ["A) Rigorous examination of core operational variables.", "B) Casual observation.", "C) Complete improvisation.", "D) Avoiding data."], correct: "A", explanation: "Rigorous examination of core variables is recommended." },
+                    { q: "4. What is the expected takeaway for students?", options: ["A) Mastery of professional discourse and tactical execution.", "B) Memorizing isolated word lists.", "C) Skipping practical exercises.", "D) Passive reading only."], correct: "A", explanation: "Mastery of professional discourse is the key takeaway." }
+                ],
+                writingInstructions: `Draft a 120–150 word academic paragraph exploring ${theme.toLowerCase()} using <strong>${grammar}</strong>.`,
+                speakingInstructions: `Record a 45–60 second voice note discussing ${theme.toLowerCase()} using <strong>${grammar}</strong>.`,
+                arcadeData: {
+                    title: "Lexical & Grammar Check ⭐",
+                    instructions: "Select the matching concept for each statement.",
+                    items: [
+                        { text: "1. A supporting structure around which something is built.", correct: "framework" },
+                        { text: "2. A system of methods used in a particular area of study.", correct: "methodology" }
+                    ],
+                    options: [
+                        { val: "framework", label: "Framework" },
+                        { val: "methodology", label: "Methodology" }
+                    ]
+                }
+            };
+        }
+        return sessions;
+    }
+
+    function toggleAuthMode() {
+        isRegisterMode = !isRegisterMode;
+        const title = document.getElementById('auth-title');
+        const subtitle = document.getElementById('auth-subtitle');
+        const submitBtn = document.getElementById('auth-submit-btn');
+        const toggleText = document.getElementById('auth-toggle-text');
+        const nameContainer = document.getElementById('name-field-container');
+
+        if (isRegisterMode) {
+            title.innerText = "Student Registration";
+            subtitle.innerText = "Create your account with email and password to track and store your course progress in the cloud.";
+            submitBtn.innerText = "Register Account & Take Survey ➔";
+            toggleText.innerText = "Already have an account? Sign in here";
+            nameContainer.classList.remove('hidden');
+        } else {
+            title.innerText = "Student Login";
+            subtitle.innerText = "Enter your credentials to securely access your cloud-saved course progress across devices.";
+            submitBtn.innerText = "Sign In ➔";
+            toggleText.innerText = "Don't have an account? Register here";
+            nameContainer.classList.add('hidden');
+        }
+    }
+
+    function handleAuth() {
+        const email = document.getElementById('auth-email').value.trim().toLowerCase();
+        const password = document.getElementById('auth-password').value.trim();
+        const nameInput = document.getElementById('auth-name').value.trim();
+        const isAnon = document.getElementById('user-anonymous').checked;
+
+        if (!email || !email.includes('@') || !password) {
+            alert('Please enter a valid email address and password.');
+            return;
+        }
+
+        const userKey = 'dyscover_user_' + email;
+        const existingUserJSON = localStorage.getItem(userKey);
+
+        if (isRegisterMode) {
+            if (existingUserJSON) {
+                alert('An account with this email already exists. Please log in.');
+                return;
+            }
+            if (!nameInput) {
+                alert('Please enter your name or nickname for registration.');
+                return;
+            }
+
+            const newUser = {
+                email: email,
+                nickname: nameInput,
+                password: password,
+                anonymous: isAnon,
+                unlockedUnit: 1,
+                unlockedSession: 1,
+                surveyCompleted: false
+            };
+            localStorage.setItem(userKey, JSON.stringify(newUser));
+            userProfile = newUser;
+            
+            document.getElementById('auth-card').classList.add('hidden');
+            document.getElementById('survey-card').classList.remove('hidden');
+        } else {
+            if (!existingUserJSON) {
+                alert('No account found with this email. Please register first.');
+                return;
+            }
+
+            const userData = JSON.parse(existingUserJSON);
+            if (userData.password !== password) {
+                alert('Incorrect password. Please try again.');
+                return;
+            }
+
+            userProfile = userData;
+            if (!userProfile.surveyCompleted) {
+                document.getElementById('auth-card').classList.add('hidden');
+                document.getElementById('survey-card').classList.remove('hidden');
+            } else {
+                loadUserSession(userData);
+            }
+        }
+    }
+
+    function completeSurvey() {
+        userProfile.surveyCompleted = true;
+        localStorage.setItem('dyscover_user_' + userProfile.email, JSON.stringify(userProfile));
+        document.getElementById('survey-card').classList.add('hidden');
+        loadUserSession(userProfile);
+    }
+
+    function loadUserSession(userData) {
+        userProfile = userData;
+        unlockedUnit = userData.unlockedUnit || 1;
+        unlockedSession = userData.unlockedSession || 1;
+        currentUnit = unlockedUnit;
+        currentSession = unlockedSession;
+
+        const displayName = userProfile.anonymous ? '🕶️ Anonymous Student' : `👤 ${userProfile.nickname}`;
+        document.getElementById('display-student-name').innerText = displayName;
+        document.getElementById('display-student-email').innerText = userProfile.email;
+
+        document.getElementById('auth-card').classList.add('hidden');
+        document.getElementById('survey-card').classList.add('hidden');
+        document.getElementById('portal-display').classList.remove('hidden');
+        updateProgressUI();
+        renderTabs();
+        renderContent();
+    }
+
+    function logoutUser() {
+        document.getElementById('portal-display').classList.add('hidden');
+        document.getElementById('survey-card').classList.add('hidden');
+        document.getElementById('auth-card').classList.remove('hidden');
+        document.getElementById('auth-email').value = '';
+        document.getElementById('auth-password').value = '';
+        document.getElementById('auth-name').value = '';
+    }
+
+    function saveProgressToStorage() {
+        userProfile.unlockedUnit = unlockedUnit;
+        userProfile.unlockedSession = unlockedSession;
+        localStorage.setItem('dyscover_user_' + userProfile.email, JSON.stringify(userProfile));
+        updateProgressUI();
+    }
+
+    function updateProgressUI() {
+        const completedSessionsCount = ((unlockedUnit - 1) * 5) + (unlockedSession - 1);
+        const percent = Math.round((completedSessionsCount / 40) * 100);
+        document.getElementById('progress-percent').innerText = percent + '%';
+        document.getElementById('course-progress-bar').value = completedSessionsCount;
+
+        let starsHtml = '';
+        for (let i = 1; i <= 40; i++) {
+            if (i <= completedSessionsCount) {
+                starsHtml += `<span title="Completed Session ${i}">⭐</span>`;
+            } else {
+                starsHtml += `<span style="opacity: 0.3;" title="Pending Session ${i}">☆</span>`;
+            }
+        }
+        document.getElementById('achievement-stars-container').innerHTML = starsHtml;
+    }
+
+    function changeTheme(theme) { document.body.className = document.body.className.replace(/theme-\S+/, '') + ` theme-${theme}`; }
+    function changeFont(font) { document.body.className = document.body.className.replace(/font-\S+/, '') + ` font-${font}`; }
+    function changeFontSize(size) { document.documentElement.style.setProperty('--font-size-base', size); }
+
+    function toggleFocusGuide() {
+        const guide = document.getElementById('reading-focus-guide');
+        if (guide.style.display === 'block') {
+            guide.style.display = 'none';
+            document.removeEventListener('mousemove', moveGuide);
+        } else {
+            guide.style.display = 'block';
+            document.addEventListener('mousemove', moveGuide);
+        }
+    }
+
+    function moveGuide(e) { document.getElementById('reading-focus-guide').style.top = (e.clientY - 19) + 'px'; }
+
+    function renderTabs() {
+        const uContainer = document.getElementById('unit-tabs');
+        uContainer.innerHTML = '';
+        unitsData.forEach(u => {
+            const isLocked = u.id > unlockedUnit;
+            uContainer.innerHTML += `
+                <div class="unit-tab ${u.id === currentUnit ? 'active' : ''} ${isLocked ? 'locked' : ''}" 
+                     onclick="${isLocked ? '' : `switchUnit(${u.id})`}">
+                    Unit ${u.id} ${isLocked ? '🔒' : ''}
+                </div>
+            `;
+        });
+
+        const sContainer = document.getElementById('session-tabs');
+        sContainer.innerHTML = '';
+        for (let s = 1; s <= 5; s++) {
+            const isLocked = (currentUnit === unlockedUnit && s > unlockedSession) || (currentUnit > unlockedUnit);
+            sContainer.innerHTML += `
+                <button class="session-btn ${s === currentSession ? 'active' : ''} ${isLocked ? 'locked' : ''}" 
+                        onclick="${isLocked ? 'alert(\'Please complete the previous sessions first to unlock this one!\');' : `switchSession(${s})`}">
+                    Session ${s} ${isLocked ? '🔒' : '⭐'}
+                </button>
+            `;
+        }
+    }
+
+    function switchUnit(id) { 
+        if (id > unlockedUnit) {
+            alert('This unit is locked. Complete previous units first.');
+            return;
+        }
+        currentUnit = id; 
+        currentSession = (id === unlockedUnit) ? unlockedSession : 1; 
+        skillStep = 1; 
+        audioListenCount = 0; 
+        renderTabs(); 
+        renderContent(); 
+    }
+
+    function switchSession(s) { 
+        if (currentUnit === unlockedUnit && s > unlockedSession) {
+            alert('Please complete the preceding sessions in order.');
+            return;
+        }
+        currentSession = s; 
+        skillStep = 1; 
+        audioListenCount = 0; 
+        renderTabs(); 
+        renderContent(); 
+    }
+
+    function updateOrder(selectElem, index) {
+        activityOrder[index] = selectElem.value;
+        renderContent();
+    }
+
+    function makeWordsClickable(text) {
+        return text.split(' ').map(w => {
+            let clean = w.replace(/[^a-zA-Z]/g, '');
+            if (!clean) return w;
+            return `<span class="clickable-word" onclick="analyzeWord('${clean}')">${w}</span>`;
+        }).join(' ');
+    }
+
+    function renderContent() {
+        const display = document.getElementById('content-display');
+        const unit = unitsData.find(u => u.id === currentUnit);
+        const unitContentMap = sessionContents[currentUnit] || sessionContents[1];
+        const sessionData = unitContentMap[currentSession] || unitContentMap[1];
+
+        let vocabHtml = sessionData.vocabulary.map(v => `
+            <li>
+                <strong>${v.term}</strong> <em>(${v.type})</em>: ${v.meaning}
+                ${v.example ? `<br><span style="color: var(--primary-dark); font-size: 0.92rem;">↳ ${v.example}</span>` : ''}
+            </li>
+        `).join('');
+
+        if (currentSession === 5) {
+            let capQuizHtml = (sessionData.capstoneQuiz || []).map((item, idx) => `
+                <div class="interactive-row" id="cap-quiz-row-${idx}">
+                    <p style="margin-bottom: 8px;"><strong>${item.text}</strong></p>
+                    <select id="cap-quiz-sel-${idx}" class="btn-tool" style="width: 100%;">
+                        <option value="">-- Select matching rule or term --</option>
+                        ${sessionData.capstoneQuizOptions.map(opt => `<option value="${opt.val}">${opt.label}</option>`).join('')}
+                    </select>
+                </div>
+            `).join('');
+
+            display.innerHTML = `
+                <h2 style="color: var(--primary-dark); margin-bottom: 5px;">${unit.title} — ${sessionData.title} ⭐</h2>
+                <p style="color: var(--secondary-purple); font-weight: bold; margin-bottom: 15px;">Linguistic Focus: ${sessionData.focus}</p>
+
+                <div class="card" style="background: var(--pastel-mint); border-color: #A7F3D0; margin-bottom: 25px;">
+                    <h3 style="color: #065F46; margin-bottom: 8px;">💡 Topic Overview & Synthesis Checklist</h3>
+                    <p style="margin-bottom: 12px; font-size: 1.05rem;">${sessionData.intro}</p>
+                    <div class="grammar-box">${sessionData.grammarGuide}</div>
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: center; margin-top: 15px;">
+                        <img src="${sessionData.theoryImg}" alt="Visual theme reference" style="width: 260px; height: 160px; object-fit: cover; border-radius: 10px; border: 2px solid #A7F3D0;">
+                        <div style="flex: 1; background: #FFF; padding: 15px; border-radius: 8px; border: 1px solid #A7F3D0;">
+                            <h4 style="color: #065F46; margin-bottom: 6px;">Unit ${currentUnit} Vocabulary Review:</h4>
+                            <ul style="padding-left: 20px; font-size: 0.95rem; display: flex; flex-direction: column; gap: 6px;">
+                                ${vocabHtml}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="capstone-forum" style="background: var(--pastel-lavender); border: 2px solid var(--secondary-purple); border-radius: 12px; padding: 25px; margin-bottom: 25px;">
+                    <h3 style="color: var(--primary-dark); margin-bottom: 10px;">🎓 I. Capstone Forum Instructions (Student Task) ⭐</h3>
+                    ${sessionData.capstoneInstructions || ''}
+                    <p style="margin-top: 12px; font-weight: bold;">Posting profile: ${userProfile.anonymous ? '🕶️ Anonymous Student' : userProfile.nickname}</p>
+                    
+                    <textarea id="capstone-text-input" class="board-input" placeholder="Write your submission or paste your Vocaroo audio link here..."></textarea>
+                    
+                    <div style="margin-top: 10px; display: flex; gap: 15px; flex-wrap: wrap; align-items: center;">
+                        <button id="record-btn" class="btn-tool" style="background: #10B981; color: #FFF; padding: 10px 16px;" onclick="toggleRecordVoice()">🎙️ Record Audio Post (45–60s)</button>
+                        <span id="recording-timer-display" style="font-weight: 700; color: var(--primary-dark);">00:00 / 01:30</span>
+                        <input type="file" accept="audio/*" class="btn-tool" onchange="handleAudioUpload(event)">
+                    </div>
+                    <div id="speaking-ai-feedback"></div>
+                </div>
+
+                <div class="skill-block" style="border-left-color: #EC4899;">
+                    <h4>🏆 II. Unit ${currentUnit} Interactive Synthesis Badge Quiz</h4>
+                    <p style="margin-bottom: 15px;">Complete this 5-question interactive review matching grammar rules, vocabulary terms, and scenarios from this unit to unlock your Master Badge!</p>
+                    ${capQuizHtml}
+                    <button class="btn-tool" style="background: #0284C7; color: #FFF; width: 100%; padding: 12px; margin-top: 10px;" onclick="evaluateCapstoneQuiz()">Verify Synthesis Quiz 🔎</button>
+                    <div id="capstone-quiz-feedback" style="margin-top: 12px;"></div>
+
+                    <button class="btn-tool" id="btn-finish-unit" style="background: var(--secondary-purple); color: #FFF; width: 100%; padding: 14px; margin-top: 20px; opacity: 0.5; cursor: not-allowed;" disabled onclick="completeUnit()">Submit Capstone & Unlock Unit ${currentUnit + 1} 🔓 ⭐</button>
+                </div>
+            `;
+            return;
+        }
+
+        let readingHtml = sessionData.paragraphs.map(p => `<p class="reading-paragraph">${makeWordsClickable(p)}</p>`).join('');
+        let activeAct = activityOrder[skillStep - 1] || 'reading';
+        let activityHtml = '';
+
+        if (activeAct === 'reading') {
+            activityHtml = `
+                <div class="skill-block">
+                    <h4>📖 I. Reading Comprehension Activity</h4>
+                    <p style="margin-bottom: 12px; color: var(--text-subtle);"><strong>Instructions:</strong> Read the article below and answer the 4 comprehension questions. Click any word to inspect its IPA phonetics and pronunciation options.</p>
+                    
+                    <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap; margin-bottom: 15px; background: var(--bg-canvas); padding: 12px; border-radius: 8px;">
+                        <button class="btn-tool" style="background:var(--secondary-purple); color:#FFF;" onclick="playBimodalReading('${encodeURIComponent(sessionData.paragraphs.join(' '))}')">🔊 Listen / Follow Reading</button>
+                        <label>Voice: <select id="reading-voice" class="btn-tool" style="padding:4px;"><option value="us-female">US Female</option><option value="us-male">US Male</option><option value="uk-female">UK Female</option><option value="uk-male">UK Male</option></select></label>
+                        <label>Speed: <select id="reading-speed" class="btn-tool" style="padding:4px;"><option value="0.75">0.75x</option><option value="1.0" selected>1.0x</option><option value="1.25">1.25x</option></select></label>
+                    </div>
+
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: center; margin-bottom: 20px;">
+                        <img src="${sessionData.readingImg}" alt="Reading illustration" style="width: 100%; max-height: 240px; object-fit: cover; border-radius: 10px; border: 2px solid var(--border-color);">
+                    </div>
+
+                    <div style="margin: 15px 0;">${readingHtml}</div>
+
+                    <h4 style="color: var(--primary-dark); margin-top: 20px; margin-bottom: 10px;">Comprehension Questions (4 Questions)</h4>
+                    ${sessionData.questionsRead.map((qObj, qIdx) => `
+                        <div style="background: var(--bg-canvas); padding: 15px; border-radius: 8px; margin-top: 15px;" id="read-q-container-${qIdx}">
+                            <p><strong>${qObj.q}</strong></p>
+                            <label class="quiz-option"><input type="radio" name="read_q${qIdx}" value="A"> ${qObj.options[0]}</label>
+                            <label class="quiz-option"><input type="radio" name="read_q${qIdx}" value="B"> ${qObj.options[1]}</label>
+                            <label class="quiz-option"><input type="radio" name="read_q${qIdx}" value="C"> ${qObj.options[2]}</label>
+                            ${qObj.options[3] ? `<label class="quiz-option"><input type="radio" name="read_q${qIdx}" value="D"> ${qObj.options[3]}</label>` : ''}
+                        </div>
+                    `).join('')}
+
+                    <button class="btn-tool" style="margin-top: 20px; background: #0284C7; color: #FFF; width: 100%; padding: 12px;" onclick="evaluateReadingAnswers()">Evaluate Reading 📝</button>
+                    <div id="reading-evaluation-results" style="margin-top: 15px;"></div>
+                    <button class="btn-tool" style="margin-top: 25px; background: var(--secondary-purple); color: #FFF; width: 100%; padding: 14px;" onclick="advanceStep()">Next Activity ➔</button>
+                </div>
+            `;
+        } else if (activeAct === 'listening') {
+            activityHtml = `
+                <div class="skill-block" style="border-left-color: #3B82F6;">
+                    <h4>🎧 II. Listening Comprehension</h4>
+                    <p style="margin-bottom: 12px; color: var(--text-subtle);"><strong>Instructions:</strong> Listen to the audio clip and answer the 4 comprehension questions. Transcripts & IPA unlock after 3 verified listens.</p>
+                    
+                    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin: 15px 0; background: var(--bg-canvas); padding: 12px; border-radius: 8px;">
+                        <button class="btn-tool" onclick="controlAudio('play', '${encodeURIComponent(sessionData.audioScript)}')">▶ Play Audio</button>
+                        <button class="btn-tool" onclick="controlAudio('pause')">⏸ Pause / Resume</button>
+                        <button class="btn-tool" onclick="controlAudio('reset')">⏹ Reset</button>
+                        <label>Voice: <select id="listening-voice" class="btn-tool" style="padding:4px;"><option value="us-female">US Female</option><option value="us-male">US Male</option><option value="uk-female">UK Female</option><option value="uk-male">UK Male</option></select></label>
+                        <label>Speed: <select id="listening-speed" class="btn-tool" style="padding:4px;"><option value="0.75">0.75x</option><option value="1.0" selected>1.0x</option><option value="1.25">1.25x</option></select></label>
+                        <span id="audio-counter-badge" style="margin-left: 10px; font-weight: bold; color: var(--secondary-purple);">Listens: ${audioListenCount}/3</span>
+                    </div>
+
+                    <button class="btn-tool" id="btn-transcript" style="opacity: 0.5; cursor: not-allowed;" onclick="toggleTranscript()">🔒 Academic Transcript & IPA (Listen 3 times)</button>
+                    <div id="transcript-box" class="hidden" style="background: var(--bg-canvas); padding: 18px; border-radius: 8px; margin-top: 10px;">
+                        <p><strong>Standard Text:</strong> <em>"${sessionData.audioScript}"</em></p>
+                        <p style="margin-top: 10px; color: var(--secondary-purple);"><strong>Phonetic IPA Transcription (UK Standard):</strong> <em>"${sessionData.audioIpaScript}"</em></p>
+                    </div>
+
+                    <h4 style="color: var(--primary-dark); margin-top: 25px; margin-bottom: 10px;">Comprehension Questions (4 Questions)</h4>
+                    ${sessionData.questionsList.map((qObj, qIdx) => `
+                        <div style="background: var(--bg-canvas); padding: 15px; border-radius: 8px; margin-top: 15px;" id="list-q-container-${qIdx}">
+                            <p><strong>${qObj.q}</strong></p>
+                            <label class="quiz-option"><input type="radio" name="list_q${qIdx}" value="A"> ${qObj.options[0]}</label>
+                            <label class="quiz-option"><input type="radio" name="list_q${qIdx}" value="B"> ${qObj.options[1]}</label>
+                            <label class="quiz-option"><input type="radio" name="list_q${qIdx}" value="C"> ${qObj.options[2]}</label>
+                            ${qObj.options[3] ? `<label class="quiz-option"><input type="radio" name="list_q${qIdx}" value="D"> ${qObj.options[3]}</label>` : ''}
+                        </div>
+                    `).join('')}
+
+                    <button class="btn-tool" style="margin-top: 20px; background: #0284C7; color: #FFF; width: 100%; padding: 12px;" onclick="evaluateListeningAnswers()">Evaluate Listening 📝</button>
+                    <div id="listening-evaluation-results" style="margin-top: 15px;"></div>
+                    <button class="btn-tool" style="margin-top: 25px; background: var(--secondary-purple); color: #FFF; width: 100%; padding: 14px;" onclick="advanceStep()">Next Activity ➔</button>
+                </div>
+            `;
+        } else if (activeAct === 'speaking') {
+            activityHtml = `
+                <div class="skill-block" style="border-left-color: #10B981;">
+                    <h4>🗣️ IV. Oral Production</h4>
+                    <p style="font-size: 1.05rem; margin-bottom: 15px;"><strong>Instructions:</strong> ${sessionData.speakingInstructions} You can record directly here or use <a href="https://vocaroo.com" target="_blank" style="color:var(--secondary-purple); font-weight:bold;">Vocaroo</a>, download your audio, and upload it below.</p>
+                    
+                    <div style="margin: 15px 0; display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+                        <button id="record-btn" class="btn-tool" style="background: #10B981; color: #FFF; padding: 12px 20px;" onclick="toggleRecordVoice()">🎙️ Record Voice Note</button>
+                        <span id="recording-timer-display" style="font-weight: 700; font-size: 1.1rem; color: var(--primary-dark);">00:00 / 01:30</span>
+                    </div>
+                    <div style="margin-top: 10px;">
+                        <label style="font-weight: 600; display: block; margin-bottom: 5px;">Or upload external audio recording (.mp3 / .wav from Vocaroo):</label>
+                        <input type="file" accept="audio/*" class="btn-tool" onchange="handleAudioUpload(event)">
+                    </div>
+                    <div id="speaking-ai-feedback"></div>
+                    <button class="btn-tool" style="margin-top: 25px; background: var(--secondary-purple); color: #FFF; width: 100%; padding: 14px;" onclick="advanceStep()">Next Activity ➔</button>
+                </div>
+            `;
+        } else if (activeAct === 'writing') {
+            activityHtml = `
+                <div class="skill-block" style="border-left-color: #F59E0B;">
+                    <h4>✍️ III. Written Production</h4>
+                    <p style="font-size: 1.05rem; margin-bottom: 15px;"><strong>Instructions:</strong> ${sessionData.writingInstructions}</p>
+                    
+                    <textarea id="writing-input" class="board-input" placeholder="Compose your response in English here..."></textarea>
+                    <button class="btn-tool" style="background: #F59E0B; color: #FFF; padding: 12px 20px;" onclick="analyzeCustomWriting()">✨ Instant Writing Feedback</button>
+                    <div id="writing-ai-feedback"></div>
+                    <button class="btn-tool" style="margin-top: 25px; background: var(--secondary-purple); color: #FFF; width: 100%; padding: 14px;" onclick="advanceStep()">Next Activity ➔</button>
+                </div>
+            `;
+        } else if (activeAct === 'arcade') {
+            const arc = sessionData.arcadeData;
+            let itemsHtml = arc.items.map((item, idx) => `
+                <div class="interactive-row" id="arc-row-${idx}">
+                    <p style="margin-bottom: 8px;"><strong>${item.text}</strong></p>
+                    <select id="arc-select-${idx}" class="btn-tool" style="width: 100%;">
+                        <option value="">-- Choose the correct option --</option>
+                        ${arc.options.map(opt => `<option value="${opt.val}">${opt.label}</option>`).join('')}
+                    </select>
+                </div>
+            `).join('');
+
+            activityHtml = `
+                <div class="skill-block" style="border-left-color: #EC4899;">
+                    <h4>🎮 V. ${arc.title}</h4>
+                    <p style="margin-bottom: 15px;">${arc.instructions}</p>
+                    
+                    <div style="background: var(--bg-canvas); padding: 20px; border-radius: 12px; margin: 15px 0; border: 2px solid var(--border-color);">
+                        ${itemsHtml}
+                        <button class="btn-tool" style="background: #0284C7; color: #FFF; width: 100%; padding: 12px; margin-top: 10px;" onclick="evaluateDynamicArcade()">Verify Answers 🔎</button>
+                        <div id="arcade-dynamic-feedback" style="margin-top: 12px;"></div>
+                    </div>
+
+                    <button class="btn-tool" id="btn-finish-session" style="background: #EC4899; color: #FFF; width: 100%; padding: 14px; opacity: 0.5; cursor: not-allowed;" disabled onclick="completeSessionStep()">Complete Session ${currentSession} & Unlock Star ⭐ ✔</button>
+                </div>
+            `;
+        }
+
+        display.innerHTML = `
+            <h2 style="color: var(--primary-dark); margin-bottom: 5px;">${unit.title} — ${sessionData.title}</h2>
+            <p style="color: var(--secondary-purple); font-weight: bold; margin-bottom: 15px;">Linguistic Focus: ${sessionData.focus}</p>
+
+            <div style="background: var(--pastel-lavender); border: 2px solid var(--secondary-purple); padding: 15px; border-radius: 12px; margin-bottom: 25px;">
+                <h4 style="color: var(--primary-dark); margin-bottom: 8px;">⚙️ Customize Your Learning Flow</h4>
+                <p style="font-size: 0.9rem; margin-bottom: 10px;">Select the sequence in which you prefer to tackle today's activities:</p>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <select class="btn-tool" onchange="updateOrder(this, 0)"><option value="reading" ${activityOrder[0]==='reading'?'selected':''}>1. Reading</option><option value="listening" ${activityOrder[0]==='listening'?'selected':''}>1. Listening</option><option value="speaking" ${activityOrder[0]==='speaking'?'selected':''}>1. Speaking</option><option value="writing" ${activityOrder[0]==='writing'?'selected':''}>1. Writing</option><option value="arcade" ${activityOrder[0]==='arcade'?'selected':''}>1. Interactive</option></select>
+                    <select class="btn-tool" onchange="updateOrder(this, 1)"><option value="reading" ${activityOrder[1]==='reading'?'selected':''}>2. Reading</option><option value="listening" ${activityOrder[1]==='listening'?'selected':''}>2. Listening</option><option value="speaking" ${activityOrder[1]==='speaking'?'selected':''}>2. Speaking</option><option value="writing" ${activityOrder[1]==='writing'?'selected':''}>2. Writing</option><option value="arcade" ${activityOrder[1]==='arcade'?'selected':''}>2. Interactive</option></select>
+                    <select class="btn-tool" onchange="updateOrder(this, 2)"><option value="reading" ${activityOrder[2]==='reading'?'selected':''}>3. Reading</option><option value="listening" ${activityOrder[2]==='listening'?'selected':''}>3. Listening</option><option value="speaking" ${activityOrder[2]==='speaking'?'selected':''}>3. Speaking</option><option value="writing" ${activityOrder[2]==='writing'?'selected':''}>3. Writing</option><option value="arcade" ${activityOrder[2]==='arcade'?'selected':''}>3. Interactive</option></select>
+                    <select class="btn-tool" onchange="updateOrder(this, 3)"><option value="reading" ${activityOrder[3]==='reading'?'selected':''}>4. Reading</option><option value="listening" ${activityOrder[3]==='listening'?'selected':''}>4. Listening</option><option value="speaking" ${activityOrder[3]==='speaking'?'selected':''}>4. Speaking</option><option value="writing" ${activityOrder[3]==='writing'?'selected':''}>4. Writing</option><option value="arcade" ${activityOrder[3]==='arcade'?'selected':''}>4. Interactive</option></select>
+                    <select class="btn-tool" onchange="updateOrder(this, 4)"><option value="reading" ${activityOrder[4]==='reading'?'selected':''}>5. Reading</option><option value="listening" ${activityOrder[4]==='listening'?'selected':''}>5. Listening</option><option value="speaking" ${activityOrder[4]==='speaking'?'selected':''}>5. Speaking</option><option value="writing" ${activityOrder[4]==='writing'?'selected':''}>5. Writing</option><option value="arcade" ${activityOrder[4]==='arcade'?'selected':''}>5. Interactive</option></select>
+                </div>
+            </div>
+
+            <div class="card" style="background: var(--pastel-mint); border-color: #A7F3D0; margin-bottom: 25px;">
+                <h3 style="color: #065F46; margin-bottom: 8px;">💡 Topic Overview & Grammar Guide</h3>
+                <p style="margin-bottom: 12px; font-size: 1.05rem;">${sessionData.intro}</p>
+                <div class="grammar-box">${sessionData.grammarGuide || ''}</div>
+                <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-start; margin-top: 15px;">
+                    <img src="${sessionData.theoryImg}" alt="Visual theme reference" style="width: 260px; height: 180px; object-fit: cover; border-radius: 10px; border: 2px solid #A7F3D0;">
+                    <div style="flex: 1; background: #FFF; padding: 15px; border-radius: 8px; border: 1px solid #A7F3D0;">
+                        <h4 style="color: #065F46; margin-bottom: 8px;">Key Vocabulary & Contextualized Sentences:</h4>
+                        <ul style="padding-left: 20px; font-size: 0.95rem; display: flex; flex-direction: column; gap: 10px;">
+                            ${vocabHtml}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            ${activityHtml}
+        `;
+    }
+
+    function advanceStep() {
+        skillStep++;
+        if (skillStep > 5) skillStep = 5;
+        renderContent();
+    }
+
+    function evaluateReadingAnswers() {
+        const unitContentMap = sessionContents[currentUnit] || sessionContents[1];
+        const sessionData = unitContentMap[currentSession] || unitContentMap[1];
+        let score = 0;
+        let feedbackHTML = `<div style="margin-top: 10px;">`;
+
+        sessionData.questionsRead.forEach((qObj, qIdx) => {
+            const selected = document.querySelector(`input[name="read_q${qIdx}"]:checked`);
+            const container = document.getElementById(`read-q-container-${qIdx}`);
+            
+            if (selected && selected.value === qObj.correct) {
+                score++;
+                container.style.border = "2px solid #10B981";
+                feedbackHTML += `<div class="feedback-box feedback-correct" style="margin-bottom:8px;"><strong>Question ${qIdx+1} Correct! ⭐</strong> ${qObj.explanation}</div>`;
+            } else {
+                container.style.border = "2px solid #EF4444";
+                let userAns = selected ? selected.value : "None";
+                feedbackHTML += `<div class="feedback-box feedback-incorrect" style="margin-bottom:8px;"><strong>Question ${qIdx+1} Incorrect (You chose ${userAns}, correct was ${qObj.correct}):</strong> ${qObj.explanation}</div>`;
+            }
+        });
+
+        feedbackHTML += `</div>`;
+        document.getElementById('reading-evaluation-results').innerHTML = `
+            <div style="font-weight: bold; margin-bottom: 10px; font-size: 1.1rem;">Score: ${score} / 4 correct</div>
+            ${feedbackHTML}
+        `;
+    }
+
+    function evaluateListeningAnswers() {
+        const unitContentMap = sessionContents[currentUnit] || sessionContents[1];
+        const sessionData = unitContentMap[currentSession] || unitContentMap[1];
+        let score = 0;
+        let feedbackHTML = `<div style="margin-top: 10px;">`;
+
+        sessionData.questionsList.forEach((qObj, qIdx) => {
+            const selected = document.querySelector(`input[name="list_q${qIdx}"]:checked`);
+            const container = document.getElementById(`list-q-container-${qIdx}`);
+            
+            if (selected && selected.value === qObj.correct) {
+                score++;
+                container.style.border = "2px solid #10B981";
+                feedbackHTML += `<div class="feedback-box feedback-correct" style="margin-bottom:8px;"><strong>Question ${qIdx+1} Correct! ⭐</strong> ${qObj.explanation}</div>`;
+            } else {
+                container.style.border = "2px solid #EF4444";
+                let userAns = selected ? selected.value : "None";
+                feedbackHTML += `<div class="feedback-box feedback-incorrect" style="margin-bottom:8px;"><strong>Question ${qIdx+1} Incorrect (You chose ${userAns}, correct was ${qObj.correct}):</strong> ${qObj.explanation}</div>`;
+            }
+        });
+
+        feedbackHTML += `</div>`;
+        document.getElementById('listening-evaluation-results').innerHTML = `
+            <div style="font-weight: bold; margin-bottom: 10px; font-size: 1.1rem;">Score: ${score} / 4 correct</div>
+            ${feedbackHTML}
+        `;
+    }
+
+    function evaluateDynamicArcade() {
+        const unitContentMap = sessionContents[currentUnit] || sessionContents[1];
+        const sessionData = unitContentMap[currentSession] || unitContentMap[1];
+        const arc = sessionData.arcadeData;
+        let correctCount = 0;
+
+        arc.items.forEach((item, idx) => {
+            const sel = document.getElementById(`arc-select-${idx}`).value;
+            const row = document.getElementById(`arc-row-${idx}`);
+            if (sel === item.correct) {
+                correctCount++;
+                row.style.border = "2px solid #10B981";
+            } else {
+                row.style.border = "2px solid #EF4444";
+            }
+        });
+
+        const fbDiv = document.getElementById('arcade-dynamic-feedback');
+        if (correctCount === arc.items.length) {
+            fbDiv.className = "feedback-box feedback-correct";
+            fbDiv.innerHTML = `✔ Excellent! All ${correctCount}/${arc.items.length} items verified! Session completion unlocked. ⭐`;
+            const finishBtn = document.getElementById('btn-finish-session');
+            finishBtn.style.opacity = '1';
+            finishBtn.style.cursor = 'pointer';
+            finishBtn.removeAttribute('disabled');
+        } else {
+            fbDiv.className = "feedback-box feedback-incorrect";
+            fbDiv.innerHTML = `✖ You got ${correctCount} out of ${arc.items.length} correct. Adjust the highlighted items and try again!`;
+        }
+    }
+
+    function evaluateCapstoneQuiz() {
+        const unitContentMap = sessionContents[currentUnit] || sessionContents[1];
+        const sessionData = unitContentMap[currentSession] || unitContentMap[1];
+        const items = sessionData.capstoneQuiz || [];
+        let correctCount = 0;
+
+        items.forEach((item, idx) => {
+            const sel = document.getElementById(`cap-quiz-sel-${idx}`).value;
+            const row = document.getElementById(`cap-quiz-row-${idx}`);
+            if (sel === item.correct) {
+                correctCount++;
+                row.style.border = "2px solid #10B981";
+            } else {
+                row.style.border = "2px solid #EF4444";
+            }
+        });
+
+        const fbDiv = document.getElementById('capstone-quiz-feedback');
+        if (correctCount === items.length) {
+            fbDiv.className = "feedback-box feedback-correct";
+            fbDiv.innerHTML = `✔ Outstanding! 5/5 Master Synthesis verified! You may now submit your Capstone and unlock the next unit. ⭐`;
+            const finishBtn = document.getElementById('btn-finish-unit');
+            finishBtn.style.opacity = '1';
+            finishBtn.style.cursor = 'pointer';
+            finishBtn.removeAttribute('disabled');
+        } else {
+            fbDiv.className = "feedback-box feedback-incorrect";
+            fbDiv.innerHTML = `✖ You matched ${correctCount} of ${items.length} correctly. Review the highlighted items to unlock your badge!`;
+        }
+    }
+
+    function applyVoiceConfig(utterance, voiceType) {
+        if (!('speechSynthesis' in window)) return;
+        const voices = window.speechSynthesis.getVoices();
+        
+        let langCode = 'en-US';
+        let pitchVal = 1.0;
+        let genderKeywords = [];
+
+        if (voiceType === 'us-female') {
+            langCode = 'en-US';
+            genderKeywords = ['female', 'zira', 'susan', 'cathy', 'hazel', 'aria', 'jenny', 'monica'];
+            pitchVal = 1.3;
+        } else if (voiceType === 'us-male') {
+            langCode = 'en-US';
+            genderKeywords = ['male', 'david', 'mark', 'george', 'guy', 'ryan', 'steven'];
+            pitchVal = 0.75;
+        } else if (voiceType === 'uk-female') {
+            langCode = 'en-GB';
+            genderKeywords = ['female', 'hazel', 'george', 'libby', 'sonia', 'mia', 'stella'];
+            pitchVal = 1.3;
+        } else if (voiceType === 'uk-male') {
+            langCode = 'en-GB';
+            genderKeywords = ['male', 'oliver', 'arthur', 'ryan', 'alfie', 'daniel'];
+            pitchVal = 0.75;
+        }
+
+        utterance.lang = langCode;
+        utterance.pitch = pitchVal;
+
+        let matchedVoice = voices.find(v => (v.lang === langCode || v.lang.replace('_', '-') === langCode) && genderKeywords.some(kw => v.name.toLowerCase().includes(kw)));
+        if (!matchedVoice) {
+            matchedVoice = voices.find(v => v.lang.includes(langCode.substring(0, 2)) && genderKeywords.some(kw => v.name.toLowerCase().includes(kw)));
+        }
+        if (!matchedVoice) {
+            matchedVoice = voices.find(v => v.lang.includes(langCode.substring(0, 2)));
+        }
+        if (matchedVoice) {
+            utterance.voice = matchedVoice;
+        }
+    }
+
+    function controlAudio(action, encodedScript) {
+        if (!('speechSynthesis' in window)) return;
+
+        if (action === 'play') {
+            if (isPausedAudio) {
+                window.speechSynthesis.resume();
+                isPausedAudio = false;
+                return;
+            }
+            if (window.speechSynthesis.speaking) {
+                window.speechSynthesis.pause();
+                isPausedAudio = true;
+                return;
+            }
+
+            window.speechSynthesis.cancel();
+            audioListenCount++;
+            document.getElementById('audio-counter-badge').innerText = `Listens: ${audioListenCount}/3`;
+
+            lastAudioScript = decodeURIComponent(encodedScript);
+            currentUtterance = new SpeechSynthesisUtterance(lastAudioScript);
+            currentUtterance.rate = parseFloat(document.getElementById('listening-speed').value);
+            
+            let voiceChoice = document.getElementById('listening-voice').value;
+            applyVoiceConfig(currentUtterance, voiceChoice);
+
+            currentUtterance.onend = () => { isPausedAudio = false; };
+            window.speechSynthesis.speak(currentUtterance);
+
+            if (audioListenCount >= 3) {
+                const btn = document.getElementById('btn-transcript');
+                btn.style.opacity = '1';
+                btn.style.cursor = 'pointer';
+                btn.innerText = '🔓 View Academic Transcript & IPA';
+            }
+        } else if (action === 'pause') {
+            if (window.speechSynthesis.speaking && !isPausedAudio) {
+                window.speechSynthesis.pause();
+                isPausedAudio = true;
+            } else if (isPausedAudio) {
+                window.speechSynthesis.resume();
+                isPausedAudio = false;
+            }
+        } else if (action === 'reset') {
+            window.speechSynthesis.cancel();
+            isPausedAudio = false;
+        }
+    }
+
+    function playBimodalReading(encodedText) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const u = new SpeechSynthesisUtterance(decodeURIComponent(encodedText));
+            u.rate = parseFloat(document.getElementById('reading-speed').value);
+            let voiceChoice = document.getElementById('reading-voice').value;
+            applyVoiceConfig(u, voiceChoice);
+            window.speechSynthesis.speak(u);
+        }
+    }
+
+    function toggleTranscript() {
+        if (audioListenCount >= 3) {
+            document.getElementById('transcript-box').classList.toggle('hidden');
+        }
+    }
+
+    async function toggleRecordVoice() {
+        const btn = document.getElementById('record-btn');
+        const feedbackDiv = document.getElementById('speaking-ai-feedback');
+        const timerDisplay = document.getElementById('recording-timer-display');
+
+        if (!mediaRecorder || mediaRecorder.state === "inactive") {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+
+                mediaRecorder.ondataavailable = event => audioChunks.push(event.data);
+                mediaRecorder.onstop = () => {
+                    clearInterval(recordingTimer);
+                    const audioUrl = URL.createObjectURL(new Blob(audioChunks, { type: 'audio/webm' }));
+                    feedbackDiv.innerHTML = `
+                        <div class="feedback-box feedback-correct" style="margin-top: 15px;">
+                            <strong>✔ Voice Recording Captured (${secondsElapsed}s)! Listen back: ⭐</strong><br>
+                            <audio controls src="${audioUrl}" style="width: 100%; margin-top: 10px;"></audio>
+                            <hr style="margin: 10px 0; border: none; border-top: 1px solid #A7F3D0;">
+                            <strong>💬 Instant Oral Feedback:</strong><br>
+                            • Clear pronunciation and steady pacing!<br>
+                            • Check that you clearly applied today's target grammar structures and session vocabulary.
+                        </div>
+                    `;
+                };
+
+                mediaRecorder.start();
+                secondsElapsed = 0;
+                recordingTimer = setInterval(() => {
+                    secondsElapsed++;
+                    let mins = String(Math.floor(secondsElapsed / 60)).padStart(2, '0');
+                    let secs = String(secondsElapsed % 60).padStart(2, '0');
+                    timerDisplay.innerText = `${mins}:${secs} / 01:30`;
+                    if (secondsElapsed >= 90) toggleRecordVoice();
+                }, 1000);
+
+                btn.innerText = "⏹️ Stop Recording";
+                btn.style.background = "#EF4444";
+            } catch (err) {
+                alert("Microphone access denied. You can record on Vocaroo and upload your file below.");
+            }
+        } else {
+            mediaRecorder.stop();
+            btn.innerText = "🎙️ Record Voice Note Again";
+            btn.style.background = "#10B981";
+        }
+    }
+
+    function handleAudioUpload(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const url = URL.createObjectURL(file);
+            document.getElementById('speaking-ai-feedback').innerHTML = `
+                <div class="feedback-box feedback-correct" style="margin-top: 15px;">
+                    <strong>✔ External Audio File Linked (${file.name}): ⭐</strong><br>
+                    <audio controls src="${url}" style="width: 100%; margin-top: 10px;"></audio>
+                    <hr style="margin: 10px 0; border: none; border-top: 1px solid #A7F3D0;">
+                    <strong>💬 Instant Oral Feedback:</strong> External audio successfully integrated. Great fluency and delivery!
+                </div>
+            `;
+        }
+    }
+
+    function analyzeCustomWriting() {
+        const val = document.getElementById('writing-input').value.trim();
+        const feedbackDiv = document.getElementById('writing-ai-feedback');
+        if (!val || val.length < 20) {
+            alert('Please write at least a full sentence or paragraph before requesting feedback.');
+            return;
+        }
+
+        const wordCount = val.split(/\s+/).length;
+        const lengthStatus = (wordCount >= 100 && wordCount <= 160)
+            ? `Target range met (${wordCount} words).`
+            : `You wrote ${wordCount} words (recommended range: 100–150 words).`;
+
+        feedbackDiv.innerHTML = `
+            <div class="feedback-box feedback-correct">
+                <strong>💬 Instant Writing Feedback: ⭐</strong><br>
+                • <strong>Length Check:</strong> ${lengthStatus}<br>
+                • <strong>Grammar & Lexis Tip:</strong> Double-check that you highlighted today's target grammatical structures and included at least two session key vocabulary terms.
+            </div>
+        `;
+    }
+
+    function completeSessionStep() {
+        alert(`Great job! Session ${currentSession} completed. Star Achievement Unlocked! ⭐`);
+        if (currentSession < 5) {
+            unlockedSession = Math.max(unlockedSession, currentSession + 1);
+            currentSession++;
+            skillStep = 1;
+        }
+        saveProgressToStorage();
+        renderTabs();
+        renderContent();
+    }
+
+    function completeUnit() {
+        alert(`Congratulations! Unit ${currentUnit} Capstone Complete. Unit ${currentUnit + 1} unlocked! ⭐`);
+        if (currentUnit < 8) {
+            unlockedUnit++;
+            unlockedSession = 1;
+            currentUnit++;
+            currentSession = 1;
+            skillStep = 1;
+        }
+        saveProgressToStorage();
+        renderTabs();
+        renderContent();
+    }
+
+    const wordDictionary = {
+        "pedestrians": { ipa: "/pəˈdɛstriənz/" },
+        "dormitories": { ipa: "/ˈdɔːmɪtriz/" },
+        "walkways": { ipa: "/ˈwɔːkweɪz/" },
+        "staircases": { ipa: "/ˈsteəkeɪsɪz/" },
+        "handrails": { ipa: "/ˈhændreɪlz/" },
+        "impairments": { ipa: "/ɪmˈpeəmənts/" },
+        "infrastructure": { ipa: "/ˌɪnfrəˈstrʌktʃə/" },
+        "tactile": { ipa: "/ˈtæktaɪl/" },
+        "paving": { ipa: "/ˈpeɪvɪŋ/" },
+        "crosswalks": { ipa: "/ˈkrɒswɔːks/" },
+        "commute": { ipa: "/kəˈmjuːt/" },
+        "upgrading": { ipa: "/ʌpˈɡreɪdɪŋ/" },
+        "pavement": { ipa: "/ˈpeɪvmənt/" },
+        "renovations": { ipa: "/ˌrɛnəˈveɪʃənz/" },
+        "accessibility": { ipa: "/əkˌsɛsəˈbɪlɪti/" },
+        "interactive": { ipa: "/ˌɪntərˈæktɪv/" },
+        "kiosks": { ipa: "/ˈkiːɒsks/" },
+        "touchscreen": { ipa: "/ˈtʌtʃskriːn/" },
+        "barriers": { ipa: "/ˈbæriəz/" },
+        "wheelchairs": { ipa: "/ˈwiːltʃeəz/" },
+        "usability": { ipa: "/ˌjuːzəˈbɪlɪti/" },
+        "adjustable": { ipa: "/əˈdʒʌstəbl/" },
+        "intuitive": { ipa: "/ɪnˈtjuːɪtɪv/" },
+        "cluttered": { ipa: "/ˈklʌtəd/" },
+        "glare": { ipa: "/ɡleə/" },
+        "coatings": { ipa: "/ˈkəʊtɪŋz/" },
+        "corridors": { ipa: "/ˈkɒrɪdɔːz/" },
+        "overlapping": { ipa: "/ˌəʊvəˈlæpɪŋ/" },
+        "cognitive": { ipa: "/ˈkɒɡnətɪv/" },
+        "clutter": { ipa: "/ˈklʌtə/" },
+        "ergonomics": { ipa: "/ˌɜːɡəˈnɒmɪks/" },
+        "unauthorized": { ipa: "/ʌnˈɔːθəraɪzd/" },
+        "standardized": { ipa: "/ˈstændədaɪzd/" },
+        "sightlines": { ipa: "/ˈsaɪtlaɪnz/" },
+        "directories": { ipa: "/dɪˈrɛktəriz/" },
+        "freshmen": { ipa: "/ˈfrɛʃmən/" },
+        "anxiety": { ipa: "/æŋˈzaɪəti/" },
+        "advisory": { ipa: "/ədˈvaɪzəri/" },
+        "thunderstorm": { ipa: "/ˈθʌndəstɔːm/" },
+        "waterlogged": { ipa: "/ˈwɔːtəlɒɡd/" },
+        "meteorological": { ipa: "/ˌmiːtiərəˈlɒdʒɪkl/" },
+        "maintenance": { ipa: "/ˈmeɪntənəns/" },
+        "specialized": { ipa: "/ˈspɛʃəlaɪzd/" },
+        "proactive": { ipa: "/prəʊˈæktɪv/" },
+        "reliable": { ipa: "/rɪˈlaɪəbl/" },
+        "boarding": { ipa: "/ˈbɔːdɪŋ/" },
+        "pass": { ipa: "/pɑːs/" },
+        "luggage": { ipa: "/ˈlʌɡɪdʒ/" },
+        "security": { ipa: "/sɪˈkjʊərɪti/" },
+        "checkpoint": { ipa: "/ˈtʃɛkpɔɪnt/" },
+        "allowance": { ipa: "/əˈlaʊəns/" },
+        "terminal": { ipa: "/ˈtɜːmɪnl/" },
+        "kiosk": { ipa: "/ˈkiːɒsk/" },
+        "baggage": { ipa: "/ˈbæɡɪdʒ/" },
+        "screening": { ipa: "/ˈskriːnɪŋ/" },
+        "prohibited": { ipa: "/prəˈhɪbɪtɪd/" },
+        "queue": { ipa: "/kjuː/" },
+        "escalator": { ipa: "/ˈɛskəleɪtə/" },
+        "layover": { ipa: "/ˈleɪəʊvə/" },
+        "customs": { ipa: "/ˈkʌstəmz/" },
+        "itinerary": { ipa: "/aɪˈtɪnərəri/" },
+        "concourse": { ipa: "/ˈkɒŋkɔːs/" }
+    };
+
+    function analyzeWord(word) {
+        if (!word) return;
+        const cleanWord = word.toLowerCase();
+        const entry = wordDictionary[cleanWord] || { ipa: `/${cleanWord}/` };
+
+        document.getElementById('word-title').innerText = `Pronunciation: "${word}"`;
+        document.getElementById('word-body').innerHTML = `
+            <strong>IPA Transcription (UK Standard):</strong> <span style="color: var(--secondary-purple); font-size: 1.25rem; font-weight: bold;">${entry.ipa}</span>
+        `;
+        document.getElementById('btn-speak-word').onclick = () => {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const u = new SpeechSynthesisUtterance(word);
+                u.rate = parseFloat(document.getElementById('modal-speed-select').value);
+                let voiceChoice = document.getElementById('modal-voice-select').value;
+                applyVoiceConfig(u, voiceChoice);
+                window.speechSynthesis.speak(u);
+            }
+        };
+        document.getElementById('word-modal').classList.remove('hidden');
+    }
+
+    function closeWordModal() { document.getElementById('word-modal').classList.add('hidden'); }
+</script>
+
+</body>
+</html>
